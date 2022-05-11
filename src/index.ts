@@ -93,7 +93,7 @@ bot.command(COMMANDS.removeAdminAnnounce, async (ctx) => {
         one_time_keyboard: true,
         resize_keyboard: true,
         force_reply: true,
-        inline_keyboard: [allKeys],
+        inline_keyboard: allKeys,
       },
     });
     // const toBeAdminId = Number(ctx.message.reply_to_message?.from?.id);
