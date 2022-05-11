@@ -2,6 +2,8 @@ import { Context, Telegraf } from "telegraf";
 import { Update } from "typegram";
 import dotenv from "dotenv";
 import { COMMANDS, setupWeightRegex } from "./utils";
+import express, { Request, Response } from "express";
+import bodyParser from "body-parser";
 import {
   removeAdminCommand,
   setAdminCommand,
@@ -11,12 +13,17 @@ import {
   setupWeightCommand,
 } from "./commands";
 import { cronJobs, initCronJobs, restartCronJobs } from "./services";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 dotenv.config();
 
 const { BOT_TOKEN, SERVER_URL } = process.env;
 
 const bot: Telegraf<Context<Update>> = new Telegraf(BOT_TOKEN as string);
+const expressApp = express();
+expressApp.use(bodyParser.json());
+export const TELEGRAM_API = `https://api.telegram.org/bot${BOT_TOKEN}`;
+const URI = `/webhook/${BOT_TOKEN}`;
+const WEBHOOK_URL = SERVER_URL + URI;
 
 bot.start((ctx) => ctx.reply("Welcome"));
 bot.help((ctx) => ctx.reply("Send me a sticker"));
@@ -40,25 +47,34 @@ bot.command(COMMANDS.addAdminAnnounce, async (ctx) => {
   console.log("replying", replying_id);
 });
 
-const initBot = async () => {
-  console.log(`************* INIT BOT *************`);
-  // bot.launch();
-  bot.launch({
-    webhook: {
-      domain: SERVER_URL,
-      port: Number(process.env.PORT),
-      cb: (f) => console.log(f),
-    },
-  });
-  console.log(`[INFO]: Bot started.`);
-  await initCronJobs();
-  console.log(`************ INIT  DONE ************`);
-};
+// const initBot = async () => {
+//   console.log(`************* INIT BOT *************`);
+//   await initCronJobs();
+//   console.log(`************ INIT  DONE ************`);
+// };
 
-initBot();
+// initBot();
 // keeps the heroku app alive
 setInterval(function () {
-  axios
-    .get(`${process.env.SERVER_URL}`)
-    .catch((e) => console.log("[INTERVAL ERROR]:", e.name));
+  try {
+    axios.get(`${process.env.SERVER_URL}`);
+  } catch (e) {
+    // ts-ignore
+    console.log("[INTERVAL ERROR]:", `Error fetching the thing.`);
+  }
 }, 600000); // every 10 minutes
+
+bot.telegram.setWebhook(`${SERVER_URL}/bot${BOT_TOKEN}`);
+expressApp.use(bot.webhookCallback(`/bot${BOT_TOKEN}`));
+
+expressApp.get("/", (req: Request, res: Response) => {
+  res.json({ alive: true });
+});
+
+expressApp.listen(process.env.PORT || 3000, async () => {
+  console.log(`************* INIT BOT *************`);
+  await initCronJobs();
+  console.log("PORT", process.env.PORT);
+
+  console.log(`************ INIT  DONE ************`);
+});
