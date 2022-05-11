@@ -74,13 +74,16 @@ bot.command(COMMANDS.removeAdminAnnounce, async (ctx) => {
     // ctx.callbackQuery()
     const data = await fetchAnnouncements();
     type Keyboard = {
-      callback_data: number;
+      callback_data: string;
       text: string;
     };
     const allKeys: any = [];
     let tempKeys: Keyboard[] = [];
     data.admins.forEach(({ admin_id, admin_name }, i) => {
-      tempKeys.push({ text: admin_name, callback_data: admin_id });
+      tempKeys.push({
+        text: admin_name,
+        callback_data: `${COMMANDS.removeAdminAction} ${admin_id}`,
+      });
       if (tempKeys.length < 3 || data.admins.length - 1 === i) {
         allKeys.push(tempKeys);
         tempKeys = [];
@@ -126,6 +129,21 @@ bot.command(COMMANDS.removeGroupAnnounce, async (ctx) => {
   } catch (err) {
     errorHandler(ctx, err);
   }
+});
+
+const regRemoveAdmin = RegExp(
+  `\b${COMMANDS.removeAdminAction}\b -?[1-9]{0,}`,
+  "g"
+);
+
+bot.action(regRemoveAdmin, async (ctx) => {
+  const callbackData = ctx.callbackQuery.data;
+  if (!callbackData) return;
+  ctx.deleteMessage();
+  const id = callbackData
+    .trim()
+    .replaceAll(`${COMMANDS.removeAdminAction}`, "");
+  console.log(id);
 });
 
 //#region STARTING THE SERVER

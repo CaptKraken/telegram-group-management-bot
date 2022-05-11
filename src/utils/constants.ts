@@ -9,6 +9,8 @@ export const COMMANDS = {
   removeAdminAnnounce: "removeAdminAnnounce",
   removeGroupAnnounce: "removeGroupAnnounce",
   emit: "emit",
+  removeAdminAction: "remove-admin-action",
+  removeGroupAction: "remove-group-action",
 };
 
 export const everydayAt5AM = "0 0 5 * * *";
