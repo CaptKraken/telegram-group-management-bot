@@ -15,7 +15,7 @@ export const setupWeightCommand = async (ctx: Context<Update>) => {
     const message = ctx.message?.text.replace("/setupWeight ", "").trim();
 
     const senderId = Number(ctx.message?.from.id);
-    const isAllowed = senderId === 762081278 || senderId === 799230945;
+    const isAllowed = senderId === 762081278 || senderId === 79111226;
     console.log(senderId);
 
     if (!isAllowed) return;
