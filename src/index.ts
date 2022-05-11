@@ -42,21 +42,21 @@ bot.command(COMMANDS.addAdminAnnounce, async (ctx) => {
 
 const initBot = async () => {
   console.log(`************* INIT BOT *************`);
-  bot.launch();
-  // bot.launch({
-  //   webhook: {
-  //     domain: SERVER_URL,
-  //     port: Number(process.env.PORT),
-  //     cb: (f) => console.log(f),
-  //   },
-  // });
+  // bot.launch();
+  bot.launch({
+    webhook: {
+      domain: SERVER_URL,
+      port: Number(process.env.PORT),
+      cb: (f) => console.log(f),
+    },
+  });
   console.log(`[INFO]: Bot started.`);
   await initCronJobs();
   console.log(`************ INIT--DONE ************`);
-  // keeps the heroku app alive
-  setInterval(function () {
-    axios.get(`${process.env.SERVER_URL}`).catch((e) => console.log(e.message));
-  }, 600000); // every 10 minutes
 };
 
 initBot();
+// keeps the heroku app alive
+setInterval(function () {
+  axios.get(`${process.env.SERVER_URL}`).catch((e) => console.log(e.message));
+}, 600000); // every 10 minutes
