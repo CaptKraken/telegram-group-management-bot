@@ -57,7 +57,9 @@ bot.command(COMMANDS.addAdminAnnounce, async (ctx) => {
 // keeps the heroku app alive
 setInterval(function () {
   try {
-    axios.get(`${process.env.SERVER_URL}`);
+    axios
+      .get(`${process.env.SERVER_URL}`)
+      .then((data) => console.log(data.data));
   } catch (e) {
     // ts-ignore
     console.log("[INTERVAL ERROR]:", `Error fetching the thing.`);
