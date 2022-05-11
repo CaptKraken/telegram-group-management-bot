@@ -33,7 +33,7 @@ bot.hears(setupWeightRegex, setupWeightCommand);
 const initBot = async () => {
   console.log(`************* INIT BOT *************`);
   // bot.launch();
-  await bot.telegram.setWebhook(`${SERVER_URL}/bot${BOT_TOKEN}`);
+  // await bot.telegram.setWebhook(`${SERVER_URL}/bot${BOT_TOKEN}`);
   bot.launch({
     webhook: {
       domain: SERVER_URL,
