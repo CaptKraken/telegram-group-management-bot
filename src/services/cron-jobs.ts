@@ -82,6 +82,7 @@ export const initCronJobs = async () => {
 };
 
 export const restartCronJobs = async () => {
+  console.log(`[INFO]: Restarting cron jobs...`);
   stopCronJobs();
   await initCronJobs();
 };
