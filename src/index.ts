@@ -86,7 +86,8 @@ bot.command(COMMANDS.removeGroupAnnounce, async (ctx) => {
   try {
     const idToBeRemoved = ctx.chat.id;
     const chat = await ctx.getChat();
-    console.log(chat);
+    // @ts-ignore
+    console.log(chat.title);
 
     // if (!toBeAdminId) return;
 
