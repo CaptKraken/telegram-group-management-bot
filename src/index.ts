@@ -1,7 +1,7 @@
 import { Context, Telegraf } from "telegraf";
 import { Update } from "typegram";
 import dotenv from "dotenv";
-import { COMMANDS, setupWeightRegex } from "./utils";
+import { COMMANDS, errorHandler, setupWeightRegex } from "./utils";
 import express, { Request, Response } from "express";
 import bodyParser from "body-parser";
 import {
@@ -12,7 +12,14 @@ import {
   setScheduleCommand,
   setupWeightCommand,
 } from "./commands";
-import { cronJobs, initCronJobs, restartCronJobs } from "./services";
+import {
+  addAdminAnnouncement,
+  cronJobs,
+  initCronJobs,
+  removeAdminAnnouncement,
+  restartCronJobs,
+  sendDisappearingMessage,
+} from "./services";
 import axios, { AxiosError } from "axios";
 dotenv.config();
 
@@ -42,11 +49,58 @@ bot.hears(setupWeightRegex, setupWeightCommand);
 
 // Announce
 bot.command(COMMANDS.addAdminAnnounce, async (ctx) => {
-  const replying_id = ctx.message.reply_to_message?.from?.id;
+  try {
+    const toBeAdminId = Number(ctx.message.reply_to_message?.from?.id);
+    const firstName = ctx.message.reply_to_message?.from?.first_name;
+    const lastName = ctx.message.reply_to_message?.from?.last_name;
+    const userName = ctx.message.reply_to_message?.from?.username;
+    const toBeAdminName = `${firstName ?? userName} ${lastName ?? ""}`;
 
-  console.log("replying", replying_id);
+    if (!toBeAdminId || !toBeAdminName) return;
+
+    await addAdminAnnouncement(toBeAdminId, toBeAdminName);
+    await sendDisappearingMessage(
+      ctx,
+      `[SUCCESS]: ${toBeAdminName} added to admin list.`
+    );
+  } catch (err) {
+    errorHandler(ctx, err);
+  }
+});
+bot.command(COMMANDS.removeAdminAnnounce, async (ctx) => {
+  try {
+    const toBeAdminId = Number(ctx.message.reply_to_message?.from?.id);
+
+    if (!toBeAdminId) return;
+
+    await removeAdminAnnouncement(toBeAdminId);
+    await sendDisappearingMessage(
+      ctx,
+      `[SUCCESS]: user removed from admin list.`
+    );
+  } catch (err) {
+    errorHandler(ctx, err);
+  }
+});
+bot.command(COMMANDS.removeGroupAnnounce, async (ctx) => {
+  try {
+    const idToBeRemoved = ctx.chat.id;
+    const chat = await ctx.getChat();
+    console.log(chat);
+
+    // if (!toBeAdminId) return;
+
+    // await removeAdminAnnouncement(toBeAdminId);
+    // await sendDisappearingMessage(
+    //   ctx,
+    //   `[SUCCESS]: user removed from admin list.`
+    // );
+  } catch (err) {
+    errorHandler(ctx, err);
+  }
 });
 
+//#region STARTING THE SERVER
 setInterval(() => {
   try {
     axios.get(`${process.env.SERVER_URL}`);
@@ -70,3 +124,5 @@ expressApp.listen(process.env.PORT || 3000, async () => {
 
   console.log(`************ INIT  DONE ************`);
 });
+
+//#endregion

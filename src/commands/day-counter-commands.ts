@@ -58,7 +58,6 @@ export const setCountCommand = async (ctx: Context<Update>) => {
       throw new Error("Count is Invalid.");
     }
     const groupId = Number(ctx.chat?.id);
-    console.log(count);
 
     await setDayCount(groupId, count);
     await sendDisappearingMessage(ctx, `[BOT]: Day count set to ${count}.`);
