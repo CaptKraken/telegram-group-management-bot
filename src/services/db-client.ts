@@ -2,7 +2,7 @@ import { MongoClient, ObjectId } from "mongodb";
 import dotenv from "dotenv";
 dotenv.config();
 
-const { TOKEN, CONNECTION_STRING, DOCUMENT_ID } = process.env;
+const { TOKEN, CONNECTION_STRING } = process.env;
 const TELEGRAM_API = `https://api.telegram.org/bot${TOKEN}`;
 export const dbClient = new MongoClient(`${CONNECTION_STRING}`);
 

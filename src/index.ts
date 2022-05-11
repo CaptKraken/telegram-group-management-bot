@@ -35,10 +35,10 @@ const initBot = async () => {
   console.log(`[INFO]: Bot started.`);
   await initCronJobs();
   console.log(`************ INIT--DONE ************`);
-  // keeps the heroku app alive
-  setInterval(function () {
-    axios.get(`${process.env.SERVER_URL}`).catch((e) => console.log(e.message));
-  }, 600000); // every 10 minutes
 };
 
 initBot();
+// keeps the heroku app alive
+setInterval(function () {
+  axios.get(`${process.env.SERVER_URL}`).catch((e) => console.log(e.message));
+}, 600000); // every 10 minutes
