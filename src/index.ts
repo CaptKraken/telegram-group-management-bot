@@ -73,14 +73,14 @@ bot.command(COMMANDS.removeAdminAnnounce, async (ctx) => {
   try {
     // ctx.callbackQuery()
     const data = await fetchAnnouncements();
-    type Admin = {
-      admin_id: number;
-      admin_name: string;
+    type Keyboard = {
+      callback_data: number;
+      text: string;
     };
     const allKeys: any = [];
-    let tempKeys: Admin[] = [];
-    data.admins.forEach(({ admin_id, admin_name }: Admin, i) => {
-      tempKeys.push({ admin_id, admin_name });
+    let tempKeys: Keyboard[] = [];
+    data.admins.forEach(({ admin_id, admin_name }, i) => {
+      tempKeys.push({ text: admin_name, callback_data: admin_id });
       if (tempKeys.length < 3 || data.admins.length - 1 === i) {
         allKeys.push(tempKeys);
         tempKeys = [];
