@@ -37,6 +37,7 @@ const initBot = async () => {
   bot.launch({
     webhook: {
       domain: SERVER_URL,
+      port: Number(process.env.PORT),
       cb: (f) => console.log(f),
     },
   });
