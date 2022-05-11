@@ -15,8 +15,10 @@ import {
 import {
   addAdminAnnouncement,
   cronJobs,
+  fetchAnnouncements,
   initCronJobs,
   removeAdminAnnouncement,
+  removeGroupAnnouncement,
   restartCronJobs,
   sendDisappearingMessage,
 } from "./services";
@@ -69,15 +71,40 @@ bot.command(COMMANDS.addAdminAnnounce, async (ctx) => {
 });
 bot.command(COMMANDS.removeAdminAnnounce, async (ctx) => {
   try {
-    const toBeAdminId = Number(ctx.message.reply_to_message?.from?.id);
+    // ctx.callbackQuery()
+    const data = await fetchAnnouncements();
+    type Admin = {
+      admin_id: number;
+      admin_name: string;
+    };
+    const allKeys: any = [];
+    let tempKeys: Admin[] = [];
+    data.admins.forEach(({ admin_id, admin_name }: Admin, i) => {
+      tempKeys.push({ admin_id, admin_name });
+      if (tempKeys.length < 3 || data.admins.length - 1 === i) {
+        allKeys.push(tempKeys);
+        tempKeys = [];
+      }
+    });
+    console.log(allKeys);
 
-    if (!toBeAdminId) return;
+    await ctx.reply("Choose:", {
+      reply_markup: {
+        one_time_keyboard: true,
+        resize_keyboard: true,
+        force_reply: true,
+        inline_keyboard: [allKeys],
+      },
+    });
+    // const toBeAdminId = Number(ctx.message.reply_to_message?.from?.id);
 
-    await removeAdminAnnouncement(toBeAdminId);
-    await sendDisappearingMessage(
-      ctx,
-      `[SUCCESS]: user removed from admin list.`
-    );
+    // if (!toBeAdminId) return;
+
+    // await removeAdminAnnouncement(toBeAdminId);
+    // await sendDisappearingMessage(
+    //   ctx,
+    //   `[SUCCESS]: user removed from admin list.`
+    // );
   } catch (err) {
     errorHandler(ctx, err);
   }
@@ -87,15 +114,15 @@ bot.command(COMMANDS.removeGroupAnnounce, async (ctx) => {
     const idToBeRemoved = ctx.chat.id;
     const chat = await ctx.getChat();
     // @ts-ignore
-    console.log(chat.title);
+    const chatName = chat.title;
 
-    // if (!toBeAdminId) return;
+    if (!idToBeRemoved || !chatName) return;
 
-    // await removeAdminAnnouncement(toBeAdminId);
-    // await sendDisappearingMessage(
-    //   ctx,
-    //   `[SUCCESS]: user removed from admin list.`
-    // );
+    await removeGroupAnnouncement(idToBeRemoved);
+    await sendDisappearingMessage(
+      ctx,
+      `[SUCCESS]: ${chatName} removed from group list.`
+    );
   } catch (err) {
     errorHandler(ctx, err);
   }
