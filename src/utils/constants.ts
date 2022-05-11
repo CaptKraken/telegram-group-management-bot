@@ -4,6 +4,11 @@ export const COMMANDS = {
   setSchedule: "setSchedule",
   setAdmin: "setAdmin",
   removeAdmin: "removeAdmin",
+  addAdminAnnounce: "addAdminAnnounce",
+  addGroupAnnounce: "addGroupAnnounce",
+  removeAdminAnnounce: "removeAdminAnnounce",
+  removeGroupAnnounce: "removeGroupAnnounce",
+  emit: "emit",
 };
 
 export const everydayAt5AM = "0 0 5 * * *";

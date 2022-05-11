@@ -12,6 +12,7 @@ import {
   setSchedule,
 } from "../services/index";
 import { restartCronJobs } from "../services/cron-jobs";
+import { adminGuardCache } from "../utils/guards";
 export const setGroupCommand = async (ctx: Context<Update>) => {
   try {
     const messageType = ctx.message?.chat.type;
@@ -45,19 +46,9 @@ export const setGroupCommand = async (ctx: Context<Update>) => {
   }
 };
 
-const adminGuard = (ctx: Context<Update>) => {
-  const groupId = Number(ctx.chat?.id);
-  const senderId = Number(ctx.from?.id);
-  const isSenderAdmin = isAdmin(groupId, senderId);
-
-  if (!isSenderAdmin) {
-    throw new Error(`Command is only available to admins.`);
-  }
-};
-
 export const setCountCommand = async (ctx: Context<Update>) => {
   try {
-    adminGuard(ctx);
+    adminGuardCache(ctx);
     const count = Number(
       // @ts-ignore
       `${ctx.message?.text}`.replace(`/${COMMANDS.setCount} `, "").trim()
@@ -78,7 +69,7 @@ export const setCountCommand = async (ctx: Context<Update>) => {
 
 export const setAdminCommand = async (ctx: Context<Update>) => {
   try {
-    adminGuard(ctx);
+    adminGuardCache(ctx);
     // @ts-ignore
     const toBeAdminId = ctx.message?.reply_to_message?.from?.id;
     const chatId = Number(`${ctx.chat?.id}`);
@@ -101,7 +92,7 @@ export const setAdminCommand = async (ctx: Context<Update>) => {
 
 export const removeAdminCommand = async (ctx: Context<Update>) => {
   try {
-    adminGuard(ctx);
+    adminGuardCache(ctx);
     // @ts-ignore
     const toBeRemovedId = Number(ctx.message.reply_to_message?.from?.id);
     const chatId = Number(ctx.chat?.id);
@@ -122,7 +113,7 @@ export const removeAdminCommand = async (ctx: Context<Update>) => {
 
 export const setScheduleCommand = async (ctx: Context<Update>) => {
   try {
-    adminGuard(ctx);
+    adminGuardCache(ctx);
     const chatId = Number(ctx.chat?.id);
     // @ts-ignore
     const cronExpression = ctx.message?.text.replace(

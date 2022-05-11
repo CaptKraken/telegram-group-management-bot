@@ -23,31 +23,40 @@ bot.help((ctx) => ctx.reply("Send me a sticker"));
 bot.on("sticker", (ctx) => ctx.reply("👍"));
 bot.hears("hi", (ctx) => ctx.reply("Hey there"));
 
+// Count
 bot.command(COMMANDS.setGroup, setGroupCommand);
 bot.command(COMMANDS.setCount, setCountCommand);
 bot.command(COMMANDS.setAdmin, setAdminCommand);
 bot.command(COMMANDS.removeAdmin, removeAdminCommand);
 bot.command(COMMANDS.setSchedule, setScheduleCommand);
 
+// Weight
 bot.hears(setupWeightRegex, setupWeightCommand);
+
+// Announce
+bot.command(COMMANDS.addAdminAnnounce, async (ctx) => {
+  const replying_id = ctx.message.reply_to_message?.message_id;
+
+  console.log("replying", replying_id);
+});
+
 const initBot = async () => {
   console.log(`************* INIT BOT *************`);
-  // bot.launch();
-  // await bot.telegram.setWebhook(`${SERVER_URL}/bot${BOT_TOKEN}`);
-  bot.launch({
-    webhook: {
-      domain: SERVER_URL,
-      port: Number(process.env.PORT),
-      cb: (f) => console.log(f),
-    },
-  });
+  bot.launch();
+  // bot.launch({
+  //   webhook: {
+  //     domain: SERVER_URL,
+  //     port: Number(process.env.PORT),
+  //     cb: (f) => console.log(f),
+  //   },
+  // });
   console.log(`[INFO]: Bot started.`);
   await initCronJobs();
   console.log(`************ INIT--DONE ************`);
+  // keeps the heroku app alive
+  setInterval(function () {
+    axios.get(`${process.env.SERVER_URL}`).catch((e) => console.log(e.message));
+  }, 600000); // every 10 minutes
 };
 
 initBot();
-// keeps the heroku app alive
-// setInterval(function () {
-//   axios.get(`${process.env.SERVER_URL}`).catch((e) => console.log(e.message));
-// }, 600000); // every 10 minutes

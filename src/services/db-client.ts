@@ -36,7 +36,7 @@ type Group = {
   group_id: number;
   group_name: string;
 };
-type AnnouncementSchema = {
+export type AnnouncementSchema = {
   _id: ObjectId;
   admins: Admin[];
   groups: Group[];
