@@ -52,11 +52,13 @@ const initBot = async () => {
   });
   console.log(`[INFO]: Bot started.`);
   await initCronJobs();
-  console.log(`************ INIT--DONE ************`);
+  console.log(`************ INIT  DONE ************`);
 };
 
 initBot();
 // keeps the heroku app alive
 setInterval(function () {
-  axios.get(`${process.env.SERVER_URL}`).catch((e) => console.log(e.message));
+  axios
+    .get(`${process.env.SERVER_URL}`)
+    .catch((e) => console.log("[INTERVAL ERROR]:", e.name));
 }, 600000); // every 10 minutes

@@ -7,8 +7,6 @@ import {
 } from "./db-client";
 
 export type SetupWeightDTO = {
-  group_id: number;
-  admin_id: number;
   day_count?: number;
   weight?: number;
   increase_by?: number;
@@ -24,8 +22,6 @@ export const setupWeight = async (payload: SetupWeightDTO) => {
       },
       {
         $set: {
-          group_id: payload.group_id,
-          admin_id: payload.admin_id,
           day_count: payload.day_count ?? doc.day_count,
           weight: payload.weight ?? doc.weight,
           increase_by: payload.increase_by ?? doc.increase_by,

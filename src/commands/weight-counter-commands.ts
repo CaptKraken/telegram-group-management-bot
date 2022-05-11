@@ -7,23 +7,21 @@ import {
 import { Context } from "telegraf";
 import { Update } from "typegram";
 import { decodeSetupWeightPayload, errorHandler } from "../utils";
+import { isGroup } from "../utils/guards";
 
 export const setupWeightCommand = async (ctx: Context<Update>) => {
   try {
     // @ts-ignore
     const message = ctx.message?.text.replace("/setupWeight ", "").trim();
 
-    const payload = decodeSetupWeightPayload(message);
+    const senderId = Number(ctx.message?.from.id);
+    const isAllowed = senderId === 762081278 || senderId === 799230945;
 
-    const finalPayload: SetupWeightDTO = {
-      // @ts-ignore
-      group_id: ctx.chat.id,
-      // @ts-ignore
-      admin_id: ctx.from.id,
-      ...payload,
-    };
+    if (!isAllowed) return;
 
-    await setupWeight(finalPayload);
+    const payload: SetupWeightDTO = decodeSetupWeightPayload(message);
+
+    await setupWeight(payload);
     sendDisappearingMessage(ctx, `[SUCCESS] - setup successful.`);
     await restartCronJobs();
   } catch (err) {
