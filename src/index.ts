@@ -42,24 +42,14 @@ bot.hears(setupWeightRegex, setupWeightCommand);
 
 // Announce
 bot.command(COMMANDS.addAdminAnnounce, async (ctx) => {
-  const replying_id = ctx.message.reply_to_message?.message_id;
+  const replying_id = ctx.message.reply_to_message?.from?.id;
 
   console.log("replying", replying_id);
 });
 
-// const initBot = async () => {
-//   console.log(`************* INIT BOT *************`);
-//   await initCronJobs();
-//   console.log(`************ INIT  DONE ************`);
-// };
-
-// initBot();
-// keeps the heroku app alive
-setInterval(function () {
+setInterval(() => {
   try {
-    axios
-      .get(`${process.env.SERVER_URL}`)
-      .then((data) => console.log(data.data));
+    axios.get(`${process.env.SERVER_URL}`);
   } catch (e) {
     // ts-ignore
     console.log("[INTERVAL ERROR]:", `Error fetching the thing.`);
