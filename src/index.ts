@@ -133,11 +133,10 @@ bot.command(COMMANDS.removeGroupAnnounce, async (ctx) => {
 const regRemoveAdmin = RegExp(`\bremove-admin-action\b -?[1-9]{0,}`, "g");
 
 bot.action(regRemoveAdmin, async (ctx) => {
-  console.log(ctx.callbackQuery);
-
-  ctx.deleteMessage();
+  await ctx.deleteMessage();
   const callbackData = ctx.callbackQuery.data;
   if (!callbackData) return;
+  console.log(ctx.callbackQuery);
   const id = callbackData
     .replaceAll(`${COMMANDS.removeAdminAction}`, "")
     .trim();
