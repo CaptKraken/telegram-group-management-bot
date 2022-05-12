@@ -44,6 +44,7 @@ export const addAdminAnnounceCommand = async (ctx: Context<Update>) => {
     // @ts-ignore
     const userName = ctx.message.reply_to_message?.from?.username;
     const toBeAdminName = `${firstName ?? userName} ${lastName ?? ""}`;
+    console.log(toBeAdminName);
 
     if (!toBeAdminId || !toBeAdminName) return;
 
