@@ -84,7 +84,7 @@ bot.command(COMMANDS.removeAdminAnnounce, async (ctx) => {
         text: admin_name,
         callback_data: `${COMMANDS.removeAdminAction} ${admin_id}`,
       });
-      if (tempKeys.length < 3 || data.admins.length - 1 === i) {
+      if (tempKeys.length === 2 || data.admins.length - 1 === i) {
         allKeys.push(tempKeys);
         tempKeys = [];
       }
@@ -130,19 +130,20 @@ bot.command(COMMANDS.removeGroupAnnounce, async (ctx) => {
   }
 });
 
-const regRemoveAdmin = RegExp(`\bremove-admin-action\b -?[1-9]{0,}`, "g");
-
 bot.action(/\bremove-admin-action\b -?[1-9]{0,}/g, async (ctx) => {
-  // await ctx.deleteMessage();
-  const callbackData = ctx.callbackQuery.data;
-  if (!callbackData) return;
-  console.log(ctx.callbackQuery);
-  const id = callbackData
-    .replaceAll(`${COMMANDS.removeAdminAction}`, "")
-    .trim();
-  console.log(id);
-  await removeAdminAnnouncement(Number(id));
-  sendDisappearingMessage(ctx, `[SUCCESS]: `);
+  try {
+    ctx.deleteMessage();
+    const callbackData = ctx.callbackQuery.data;
+    if (!callbackData) return;
+    console.log(ctx.callbackQuery);
+    const id = callbackData
+      .replaceAll(`${COMMANDS.removeAdminAction}`, "")
+      .trim();
+    await removeAdminAnnouncement(Number(id));
+    sendDisappearingMessage(ctx, `[SUCCESS]: user removed from admin list.`);
+  } catch (err) {
+    errorHandler(ctx, err);
+  }
 });
 
 //#region STARTING THE SERVER
