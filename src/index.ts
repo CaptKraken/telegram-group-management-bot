@@ -136,6 +136,10 @@ const regRemoveAdmin = RegExp(
   "g"
 );
 
+bot.inlineQuery(regRemoveAdmin, async (ctx) => {
+  console.log(ctx.inlineQuery, ctx.callbackQuery);
+});
+
 bot.action(regRemoveAdmin, async (ctx) => {
   console.log(ctx);
 
