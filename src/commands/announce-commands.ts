@@ -10,6 +10,24 @@ import {
 } from "../services";
 import { cancelKey, COMMANDS, errorHandler } from "../utils";
 
+export const emitAnnounceCommand = async (ctx: Context<Update>) => {
+  // @ts-ignore
+  const msg = ctx.message.text
+    .replace(`/${COMMANDS.emit} `, "")
+    .replace(`/${COMMANDS.emit}\n`, "")
+    .trim();
+
+  if (!msg) return;
+  const data = await fetchAnnouncements();
+  const groups = data.groups;
+  groups.forEach((group, i) => {
+    ctx.telegram.sendMessage(group.group_id, msg);
+    if (groups.length - 1 === i) {
+      ctx.reply(`[Success]: emission completed.`);
+    }
+  });
+};
+
 export const addAdminAnnounceCommand = async (ctx: Context<Update>) => {
   try {
     const isAdmin = await isSenderAdminAnnounce(Number(ctx.from?.id));

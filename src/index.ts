@@ -8,6 +8,7 @@ import bodyParser from "body-parser";
 import {
   addAdminAnnounceCommand,
   addGroupAnnounceCommand,
+  emitAnnounceCommand,
   removeAdminAnnounceCommand,
   removeAdminCommand,
   removeGroupAnnounceCommand,
@@ -17,7 +18,7 @@ import {
   setScheduleCommand,
   setupWeightCommand,
 } from "./commands";
-import { initCronJobs } from "./services";
+import { fetchAnnouncements, initCronJobs } from "./services";
 import {
   cancelAnnounceAction,
   removeAdminAnnounceAction,
@@ -50,18 +51,7 @@ bot.command(COMMANDS.setSchedule, setScheduleCommand);
 bot.hears(setupWeightRegex, setupWeightCommand);
 
 // Announce
-bot.command(COMMANDS.emit, async (ctx) => {
-  const msg = ctx.message.text
-    .replace(`/${COMMANDS.emit} `, "")
-    .replace(`/${COMMANDS.emit}\n`, "")
-    .trim();
-
-  ctx.reply(msg, {
-    reply_markup: {
-      force_reply: true,
-    },
-  });
-});
+bot.command(COMMANDS.emit, emitAnnounceCommand);
 bot.command(COMMANDS.addAdminAnnounce, addAdminAnnounceCommand);
 bot.command(COMMANDS.removeAdminAnnounce, removeAdminAnnounceCommand);
 bot.action(/\bremove-admin-action\b -?[1-9]{0,}/g, removeAdminAnnounceAction);

@@ -9,6 +9,7 @@ export {
 export { setupWeightCommand } from "./weight-counter-commands";
 
 export {
+  emitAnnounceCommand,
   addAdminAnnounceCommand,
   removeAdminAnnounceCommand,
   addGroupAnnounceCommand,
