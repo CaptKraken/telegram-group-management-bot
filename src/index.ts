@@ -114,6 +114,7 @@ bot.command(COMMANDS.removeAdminAnnounce, async (ctx) => {
 });
 bot.action(/\bremove-admin-action\b -?[1-9]{0,}/g, async (ctx) => {
   try {
+    ctx.answerCbQuery();
     ctx.deleteMessage();
     const callbackData = ctx.callbackQuery.data;
     if (!callbackData) return;
@@ -182,6 +183,7 @@ bot.command(COMMANDS.removeGroupAnnounce, async (ctx) => {
 
 bot.action(/\bremove-group-action\b -?[1-9]{0,}/g, async (ctx) => {
   try {
+    ctx.answerCbQuery();
     ctx.deleteMessage();
     const callbackData = ctx.callbackQuery.data;
     if (!callbackData) return;
@@ -196,6 +198,11 @@ bot.action(/\bremove-group-action\b -?[1-9]{0,}/g, async (ctx) => {
   } catch (err) {
     errorHandler(ctx, err);
   }
+});
+
+bot.action(/\bcancel\b/g, async (ctx) => {
+  ctx.answerCbQuery();
+  ctx.deleteMessage();
 });
 
 //#region STARTING THE SERVER
