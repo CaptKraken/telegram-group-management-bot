@@ -45,6 +45,7 @@ export const removeAdminAnnounceCommand = async (ctx: Context<Update>) => {
 
     if (data.admins.length < 2) {
       ctx.reply(`[Info]: There is only one admin.`);
+      return;
     }
 
     type Keyboard = {
