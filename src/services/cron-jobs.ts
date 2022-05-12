@@ -7,6 +7,27 @@ export let cronJobs: cron.ScheduledTask[] = [];
 const createCronJobs = async () => {
   // empty cronJobs array
   cronJobs = [];
+  const weightData = await getWeightData();
+  const isWeightScheduleValid = cron.validate(weightData.schedule);
+
+  if (isWeightScheduleValid) {
+    cronJobs.push(
+      cron.schedule(
+        weightData.schedule,
+        async () => {
+          const weightData = await updateWeightAndDay();
+          sendMessage(
+            weightData.group_id,
+            `ថ្ងៃទី${weightData.day_count} ព្រឹកនិងល្ងាច ${weightData.weight}kg`
+          );
+        },
+        {
+          scheduled: false,
+          timezone: "Asia/Phnom_Penh",
+        }
+      )
+    );
+  }
   await fetchAndCache();
 
   cache.forEach((group) => {
@@ -40,27 +61,7 @@ const createCronJobs = async () => {
       cronJobs.push(job);
     }
   });
-  const weightData = await getWeightData();
-  const isWeightScheduleValid = cron.validate(weightData.schedule);
 
-  if (isWeightScheduleValid) {
-    cronJobs.push(
-      cron.schedule(
-        weightData.schedule,
-        async () => {
-          const weightData = await updateWeightAndDay();
-          sendMessage(
-            weightData.group_id,
-            `ថ្ងៃទី${weightData.day_count} ព្រឹកនិងល្ងាច ${weightData.weight}kg`
-          );
-        },
-        {
-          scheduled: false,
-          timezone: "Asia/Phnom_Penh",
-        }
-      )
-    );
-  }
   console.log(`[INFO]: ${cronJobs.length} jobs created.`);
 };
 

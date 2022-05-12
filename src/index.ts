@@ -137,6 +137,8 @@ const regRemoveAdmin = RegExp(
 );
 
 bot.action(regRemoveAdmin, async (ctx) => {
+  console.log(ctx);
+
   const callbackData = ctx.callbackQuery.data;
   if (!callbackData) return;
   ctx.deleteMessage();
