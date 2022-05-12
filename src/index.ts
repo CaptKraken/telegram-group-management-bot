@@ -89,7 +89,6 @@ bot.command(COMMANDS.removeAdminAnnounce, async (ctx) => {
         tempKeys = [];
       }
     });
-    console.log(allKeys);
 
     await ctx.reply("Choose:", {
       reply_markup: {
@@ -136,11 +135,11 @@ const regRemoveAdmin = RegExp(
   "g"
 );
 
-bot.inlineQuery(regRemoveAdmin, async (ctx) => {
+bot.inlineQuery(/\bremove-admin-action\b -?[1-9]{0,}/g, async (ctx) => {
   console.log(ctx.inlineQuery, ctx.callbackQuery);
 });
 
-bot.action(regRemoveAdmin, async (ctx) => {
+bot.action(/\bremove-admin-action\b -?[1-9]{0,}/g, async (ctx) => {
   console.log(ctx);
 
   const callbackData = ctx.callbackQuery.data;
