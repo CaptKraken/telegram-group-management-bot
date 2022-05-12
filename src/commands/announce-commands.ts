@@ -40,6 +40,8 @@ export const removeAdminAnnounceCommand = async (ctx: Context<Update>) => {
   try {
     const data = await fetchAnnouncements();
     const isAdmin = data.admins.some((item) => item.admin_id === ctx.chat?.id);
+    console.log(data.admins, ctx.chat?.id);
+
     if (!isAdmin) return;
 
     if (data.admins.length < 2) {
