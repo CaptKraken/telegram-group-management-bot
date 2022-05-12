@@ -130,25 +130,20 @@ bot.command(COMMANDS.removeGroupAnnounce, async (ctx) => {
   }
 });
 
-const regRemoveAdmin = RegExp(
-  `\b${COMMANDS.removeAdminAction}\b -?[1-9]{0,}`,
-  "g"
-);
+const regRemoveAdmin = RegExp(`\bremove-admin-action\b -?[1-9]{0,}`, "g");
 
-bot.inlineQuery(/\bremove-admin-action\b -?[1-9]{0,}/g, async (ctx) => {
-  console.log(ctx.inlineQuery, ctx.callbackQuery);
-});
+bot.action(regRemoveAdmin, async (ctx) => {
+  console.log(ctx.callbackQuery);
 
-bot.action(/\bremove-admin-action\b -?[1-9]{0,}/g, async (ctx) => {
-  console.log(ctx);
-
+  ctx.deleteMessage();
   const callbackData = ctx.callbackQuery.data;
   if (!callbackData) return;
-  ctx.deleteMessage();
   const id = callbackData
-    .trim()
-    .replaceAll(`${COMMANDS.removeAdminAction}`, "");
+    .replaceAll(`${COMMANDS.removeAdminAction}`, "")
+    .trim();
   console.log(id);
+  await removeAdminAnnouncement(Number(id));
+  sendDisappearingMessage(ctx, `[SUCCESS]: `);
 });
 
 //#region STARTING THE SERVER
