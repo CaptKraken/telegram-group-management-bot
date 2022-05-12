@@ -14,6 +14,7 @@ import {
 } from "./commands";
 import {
   addAdminAnnouncement,
+  addGroupAnnouncement,
   cronJobs,
   fetchAnnouncements,
   initCronJobs,
@@ -23,6 +24,7 @@ import {
   sendDisappearingMessage,
 } from "./services";
 import axios, { AxiosError } from "axios";
+import { isGroup } from "./utils/guards";
 dotenv.config();
 
 const { BOT_TOKEN, SERVER_URL } = process.env;
@@ -98,38 +100,10 @@ bot.command(COMMANDS.removeAdminAnnounce, async (ctx) => {
         inline_keyboard: allKeys,
       },
     });
-    // const toBeAdminId = Number(ctx.message.reply_to_message?.from?.id);
-
-    // if (!toBeAdminId) return;
-
-    // await removeAdminAnnouncement(toBeAdminId);
-    // await sendDisappearingMessage(
-    //   ctx,
-    //   `[SUCCESS]: user removed from admin list.`
-    // );
   } catch (err) {
     errorHandler(ctx, err);
   }
 });
-bot.command(COMMANDS.removeGroupAnnounce, async (ctx) => {
-  try {
-    const idToBeRemoved = ctx.chat.id;
-    const chat = await ctx.getChat();
-    // @ts-ignore
-    const chatName = chat.title;
-
-    if (!idToBeRemoved || !chatName) return;
-
-    await removeGroupAnnouncement(idToBeRemoved);
-    await sendDisappearingMessage(
-      ctx,
-      `[SUCCESS]: ${chatName} removed from group list.`
-    );
-  } catch (err) {
-    errorHandler(ctx, err);
-  }
-});
-
 bot.action(/\bremove-admin-action\b -?[1-9]{0,}/g, async (ctx) => {
   try {
     ctx.deleteMessage();
@@ -141,6 +115,72 @@ bot.action(/\bremove-admin-action\b -?[1-9]{0,}/g, async (ctx) => {
       .trim();
     await removeAdminAnnouncement(Number(id));
     sendDisappearingMessage(ctx, `[SUCCESS]: user removed from admin list.`);
+  } catch (err) {
+    errorHandler(ctx, err);
+  }
+});
+
+bot.command(COMMANDS.addGroupAnnounce, async (ctx) => {
+  try {
+    if (!isGroup(ctx)) return;
+    const groupId = ctx.chat.id;
+    const chat = await ctx.getChat();
+    // @ts-ignore
+    const groupName = chat.title;
+    if (!groupId) return;
+    await addGroupAnnouncement(groupId, groupName || "UNNAMED GROUP");
+    sendDisappearingMessage(ctx, `[SUCCESS]: Group added to the database.`);
+  } catch (error) {
+    errorHandler(ctx, error);
+  }
+});
+
+bot.command(COMMANDS.removeGroupAnnounce, async (ctx) => {
+  try {
+    const data = await fetchAnnouncements();
+    type Keyboard = {
+      callback_data: string;
+      text: string;
+    };
+    const allKeys: any = [];
+    let tempKeys: Keyboard[] = [];
+    data.groups.forEach(({ group_id, group_name }, i) => {
+      tempKeys.push({
+        text: group_name,
+        callback_data: `${COMMANDS.removeGroupAction} ${group_id}`,
+      });
+      if (tempKeys.length === 2 || data.groups.length - 1 === i) {
+        allKeys.push(tempKeys);
+        tempKeys = [];
+      }
+    });
+
+    await ctx.reply("Choose group:", {
+      reply_markup: {
+        one_time_keyboard: true,
+        resize_keyboard: true,
+        force_reply: true,
+        inline_keyboard: allKeys,
+      },
+    });
+  } catch (err) {
+    errorHandler(ctx, err);
+  }
+});
+
+bot.action(/\bremove-group-action\b -?[1-9]{0,}/g, async (ctx) => {
+  try {
+    ctx.deleteMessage();
+    const callbackData = ctx.callbackQuery.data;
+    if (!callbackData) return;
+    const id = callbackData
+      .replaceAll(`${COMMANDS.removeGroupAction}`, "")
+      .trim();
+    await removeGroupAnnouncement(Number(id));
+    sendDisappearingMessage(
+      ctx,
+      `[SUCCESS]: group removed from the group list.`
+    );
   } catch (err) {
     errorHandler(ctx, err);
   }
