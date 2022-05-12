@@ -52,6 +52,12 @@ bot.command(COMMANDS.setSchedule, setScheduleCommand);
 bot.hears(setupWeightRegex, setupWeightCommand);
 
 // Announce
+const cancelKey = [
+  {
+    text: "Cancel",
+    callback_data: "cancel",
+  },
+];
 bot.command(COMMANDS.addAdminAnnounce, async (ctx) => {
   try {
     const toBeAdminId = Number(ctx.message.reply_to_message?.from?.id);
@@ -79,7 +85,7 @@ bot.command(COMMANDS.removeAdminAnnounce, async (ctx) => {
       callback_data: string;
       text: string;
     };
-    const allKeys: any = [];
+    const allKeys: any[] = [];
     let tempKeys: Keyboard[] = [];
     data.admins.forEach(({ admin_id, admin_name }, i) => {
       tempKeys.push({
@@ -91,7 +97,9 @@ bot.command(COMMANDS.removeAdminAnnounce, async (ctx) => {
         tempKeys = [];
       }
     });
-
+    if (allKeys.length > 0) {
+      allKeys.push(cancelKey);
+    }
     await ctx.reply("Choose:", {
       reply_markup: {
         one_time_keyboard: true,
@@ -142,7 +150,7 @@ bot.command(COMMANDS.removeGroupAnnounce, async (ctx) => {
       callback_data: string;
       text: string;
     };
-    const allKeys: any = [];
+    const allKeys: any[] = [];
     let tempKeys: Keyboard[] = [];
     data.groups.forEach(({ group_id, group_name }, i) => {
       tempKeys.push({
@@ -154,6 +162,10 @@ bot.command(COMMANDS.removeGroupAnnounce, async (ctx) => {
         tempKeys = [];
       }
     });
+
+    if (allKeys.length > 0) {
+      allKeys.push(cancelKey);
+    }
 
     await ctx.reply("Choose group:", {
       reply_markup: {
