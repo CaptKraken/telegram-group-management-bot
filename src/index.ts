@@ -1,30 +1,28 @@
 import { Context, Telegraf } from "telegraf";
 import { Update } from "typegram";
+import axios from "axios";
 import dotenv from "dotenv";
-import { COMMANDS, errorHandler, setupWeightRegex } from "./utils";
+import { COMMANDS, setupWeightRegex } from "./utils";
 import express, { Request, Response } from "express";
 import bodyParser from "body-parser";
 import {
+  addAdminAnnounceCommand,
+  addGroupAnnounceCommand,
+  removeAdminAnnounceCommand,
   removeAdminCommand,
+  removeGroupAnnounceCommand,
   setAdminCommand,
   setCountCommand,
   setGroupCommand,
   setScheduleCommand,
   setupWeightCommand,
 } from "./commands";
+import { initCronJobs } from "./services";
 import {
-  addAdminAnnouncement,
-  addGroupAnnouncement,
-  cronJobs,
-  fetchAnnouncements,
-  initCronJobs,
-  removeAdminAnnouncement,
-  removeGroupAnnouncement,
-  restartCronJobs,
-  sendDisappearingMessage,
-} from "./services";
-import axios, { AxiosError } from "axios";
-import { isGroup } from "./utils/guards";
+  cancelAnnounceAction,
+  removeAdminAnnounceAction,
+  removeGroupAnnounceAction,
+} from "./actions";
 dotenv.config();
 
 const { BOT_TOKEN, SERVER_URL } = process.env;
@@ -52,158 +50,22 @@ bot.command(COMMANDS.setSchedule, setScheduleCommand);
 bot.hears(setupWeightRegex, setupWeightCommand);
 
 // Announce
-const cancelKey = [
-  {
-    text: "Cancel",
-    callback_data: "cancel",
-  },
-];
-bot.command(COMMANDS.addAdminAnnounce, async (ctx) => {
-  try {
-    const toBeAdminId = Number(ctx.message.reply_to_message?.from?.id);
-    const firstName = ctx.message.reply_to_message?.from?.first_name;
-    const lastName = ctx.message.reply_to_message?.from?.last_name;
-    const userName = ctx.message.reply_to_message?.from?.username;
-    const toBeAdminName = `${firstName ?? userName} ${lastName ?? ""}`;
+bot.command(COMMANDS.emit, async (ctx) => {
+  const msg = ctx.message.text.replace(`/${COMMANDS.emit} `, "");
 
-    if (!toBeAdminId || !toBeAdminName) return;
-
-    await addAdminAnnouncement(toBeAdminId, toBeAdminName);
-    await sendDisappearingMessage(
-      ctx,
-      `[SUCCESS]: ${toBeAdminName} added to admin list.`
-    );
-  } catch (err) {
-    errorHandler(ctx, err);
-  }
+  ctx.reply(msg, {
+    reply_markup: {
+      force_reply: true,
+    },
+  });
 });
-bot.command(COMMANDS.removeAdminAnnounce, async (ctx) => {
-  try {
-    // ctx.callbackQuery()
-    const data = await fetchAnnouncements();
-    type Keyboard = {
-      callback_data: string;
-      text: string;
-    };
-    const allKeys: any[] = [];
-    let tempKeys: Keyboard[] = [];
-    data.admins.forEach(({ admin_id, admin_name }, i) => {
-      tempKeys.push({
-        text: admin_name,
-        callback_data: `${COMMANDS.removeAdminAction} ${admin_id}`,
-      });
-      if (tempKeys.length === 2 || data.admins.length - 1 === i) {
-        allKeys.push(tempKeys);
-        tempKeys = [];
-      }
-    });
-    if (allKeys.length > 0) {
-      allKeys.push(cancelKey);
-    }
-    await ctx.reply("Choose:", {
-      reply_markup: {
-        one_time_keyboard: true,
-        resize_keyboard: true,
-        force_reply: true,
-        inline_keyboard: allKeys,
-      },
-    });
-  } catch (err) {
-    errorHandler(ctx, err);
-  }
-});
-bot.action(/\bremove-admin-action\b -?[1-9]{0,}/g, async (ctx) => {
-  try {
-    ctx.answerCbQuery();
-    ctx.deleteMessage();
-    const callbackData = ctx.callbackQuery.data;
-    if (!callbackData) return;
-    console.log(ctx.callbackQuery);
-    const id = callbackData
-      .replaceAll(`${COMMANDS.removeAdminAction}`, "")
-      .trim();
-    await removeAdminAnnouncement(Number(id));
-    sendDisappearingMessage(ctx, `[SUCCESS]: user removed from admin list.`);
-  } catch (err) {
-    errorHandler(ctx, err);
-  }
-});
-
-bot.command(COMMANDS.addGroupAnnounce, async (ctx) => {
-  try {
-    if (!isGroup(ctx)) return;
-    const groupId = ctx.chat.id;
-    const chat = await ctx.getChat();
-    // @ts-ignore
-    const groupName = chat.title;
-    if (!groupId) return;
-    await addGroupAnnouncement(groupId, groupName || "UNNAMED GROUP");
-    sendDisappearingMessage(ctx, `[SUCCESS]: Group added to the database.`);
-  } catch (error) {
-    errorHandler(ctx, error);
-  }
-});
-
-bot.command(COMMANDS.removeGroupAnnounce, async (ctx) => {
-  try {
-    const data = await fetchAnnouncements();
-    type Keyboard = {
-      callback_data: string;
-      text: string;
-    };
-    const allKeys: any[] = [];
-    let tempKeys: Keyboard[] = [];
-    data.groups.forEach(({ group_id, group_name }, i) => {
-      tempKeys.push({
-        text: group_name,
-        callback_data: `${COMMANDS.removeGroupAction} ${group_id}`,
-      });
-      if (tempKeys.length === 2 || data.groups.length - 1 === i) {
-        allKeys.push(tempKeys);
-        tempKeys = [];
-      }
-    });
-
-    if (allKeys.length > 0) {
-      allKeys.push(cancelKey);
-    }
-
-    await ctx.reply("Choose group:", {
-      reply_markup: {
-        one_time_keyboard: true,
-        resize_keyboard: true,
-        force_reply: true,
-        inline_keyboard: allKeys,
-      },
-    });
-  } catch (err) {
-    errorHandler(ctx, err);
-  }
-});
-
-bot.action(/\bremove-group-action\b -?[1-9]{0,}/g, async (ctx) => {
-  try {
-    ctx.answerCbQuery();
-    ctx.deleteMessage();
-    const callbackData = ctx.callbackQuery.data;
-    if (!callbackData) return;
-    const id = callbackData
-      .replaceAll(`${COMMANDS.removeGroupAction}`, "")
-      .trim();
-    await removeGroupAnnouncement(Number(id));
-    sendDisappearingMessage(
-      ctx,
-      `[SUCCESS]: group removed from the group list.`
-    );
-  } catch (err) {
-    errorHandler(ctx, err);
-  }
-});
-
-bot.action(/\bcancel\b/g, async (ctx) => {
-  ctx.answerCbQuery();
-  ctx.deleteMessage();
-});
+bot.command(COMMANDS.addAdminAnnounce, addAdminAnnounceCommand);
+bot.command(COMMANDS.removeAdminAnnounce, removeAdminAnnounceCommand);
+bot.action(/\bremove-admin-action\b -?[1-9]{0,}/g, removeAdminAnnounceAction);
+bot.command(COMMANDS.addGroupAnnounce, addGroupAnnounceCommand);
+bot.command(COMMANDS.removeGroupAnnounce, removeGroupAnnounceCommand);
+bot.action(/\bremove-group-action\b -?[1-9]{0,}/g, removeGroupAnnounceAction);
+bot.action(/\bcancel\b/g, cancelAnnounceAction);
 
 //#region STARTING THE SERVER
 setInterval(() => {

@@ -1,5 +1,10 @@
 export { errorHandler } from "./error-handler";
-export { COMMANDS, setupWeightRegex, regexCronExpression } from "./constants";
+export {
+  COMMANDS,
+  setupWeightRegex,
+  regexCronExpression,
+  cancelKey,
+} from "./constants";
 export const errorLog = (name: string, err: Error) => {
   const errorString = `[ERROR]: (${Date.now().toLocaleString()})\nFunction: ${name}\nError:\n${
     err.message
