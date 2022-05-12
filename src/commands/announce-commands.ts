@@ -39,8 +39,7 @@ export const addAdminAnnounceCommand = async (ctx: Context<Update>) => {
 export const removeAdminAnnounceCommand = async (ctx: Context<Update>) => {
   try {
     const data = await fetchAnnouncements();
-    const isAdmin = data.admins.some((item) => item.admin_id === ctx.chat?.id);
-    console.log(data.admins, ctx.chat?.id);
+    const isAdmin = data.admins.some((item) => item.admin_id === ctx.from?.id);
 
     if (!isAdmin) return;
 
@@ -101,7 +100,7 @@ export const addGroupAnnounceCommand = async (ctx: Context<Update>) => {
 export const removeGroupAnnounceCommand = async (ctx: Context<Update>) => {
   try {
     const data = await fetchAnnouncements();
-    const isAdmin = data.admins.some((item) => item.admin_id === ctx.chat?.id);
+    const isAdmin = data.admins.some((item) => item.admin_id === ctx.from?.id);
     if (!isAdmin) return;
 
     type Keyboard = {
