@@ -51,7 +51,10 @@ bot.hears(setupWeightRegex, setupWeightCommand);
 
 // Announce
 bot.command(COMMANDS.emit, async (ctx) => {
-  const msg = ctx.message.text.replace(`/${COMMANDS.emit} `, "");
+  const msg = ctx.message.text
+    .replace(`/${COMMANDS.emit} `, "")
+    .replace(`/${COMMANDS.emit}\n`, "")
+    .trim();
 
   ctx.reply(msg, {
     reply_markup: {
