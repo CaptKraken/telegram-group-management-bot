@@ -119,4 +119,9 @@ export const findGroup = async (groupId: number) => {
   await dbClient.close();
   return col;
 };
+
+export const isSenderAdminAnnounce = async (senderId: number) => {
+  const data = await fetchAnnouncements();
+  return data.admins.some((admin) => admin.admin_id === senderId);
+};
 //#endregion

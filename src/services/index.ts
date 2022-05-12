@@ -34,4 +34,5 @@ export {
   removeGroupAnnouncement,
   findGroup,
   fetchAnnouncements,
+  isSenderAdminAnnounce,
 } from "./announce";

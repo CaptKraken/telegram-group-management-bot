@@ -5,12 +5,15 @@ import {
   addAdminAnnouncement,
   addGroupAnnouncement,
   fetchAnnouncements,
+  isSenderAdminAnnounce,
   sendDisappearingMessage,
 } from "../services";
 import { cancelKey, COMMANDS, errorHandler } from "../utils";
 
 export const addAdminAnnounceCommand = async (ctx: Context<Update>) => {
   try {
+    const isAdmin = await isSenderAdminAnnounce(Number(ctx.from?.id));
+    if (!isAdmin) return;
     // @ts-ignore
     const toBeAdminId = Number(ctx.message.reply_to_message?.from?.id);
     // @ts-ignore
@@ -36,6 +39,13 @@ export const addAdminAnnounceCommand = async (ctx: Context<Update>) => {
 export const removeAdminAnnounceCommand = async (ctx: Context<Update>) => {
   try {
     const data = await fetchAnnouncements();
+    const isAdmin = data.admins.some((item) => item.admin_id === ctx.chat?.id);
+    if (!isAdmin) return;
+
+    if (data.admins.length < 2) {
+      ctx.reply(`[Info]: There is only one admin.`);
+    }
+
     type Keyboard = {
       callback_data: string;
       text: string;
@@ -71,6 +81,8 @@ export const removeAdminAnnounceCommand = async (ctx: Context<Update>) => {
 export const addGroupAnnounceCommand = async (ctx: Context<Update>) => {
   try {
     if (!isGroup(ctx)) return;
+    const isAdmin = await isSenderAdminAnnounce(Number(ctx.from?.id));
+    if (!isAdmin) return;
     // @ts-ignore
     const groupId = ctx.chat.id;
     const chat = await ctx.getChat();
@@ -87,6 +99,9 @@ export const addGroupAnnounceCommand = async (ctx: Context<Update>) => {
 export const removeGroupAnnounceCommand = async (ctx: Context<Update>) => {
   try {
     const data = await fetchAnnouncements();
+    const isAdmin = data.admins.some((item) => item.admin_id === ctx.chat?.id);
+    if (!isAdmin) return;
+
     type Keyboard = {
       callback_data: string;
       text: string;
