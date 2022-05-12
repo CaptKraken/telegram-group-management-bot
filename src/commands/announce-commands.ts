@@ -11,6 +11,9 @@ import {
 import { cancelKey, COMMANDS, errorHandler } from "../utils";
 
 export const emitAnnounceCommand = async (ctx: Context<Update>) => {
+  const isAdmin = await isSenderAdminAnnounce(Number(ctx.from?.id));
+  if (!isAdmin) return;
+
   // @ts-ignore
   const msg = ctx.message.text
     .replace(`/${COMMANDS.emit} `, "")
