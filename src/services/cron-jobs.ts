@@ -1,31 +1,29 @@
 import cron from "node-cron";
+import { emptyNodeCronStorage } from "../utils";
 import { cache, fetchAndCache, increaseDayCount } from "./day-counter";
 import { sendMessage } from "./messaging";
 import { getWeightData, updateWeightAndDay } from "./weight-counter";
-export let cronJobs: cron.ScheduledTask[] = [];
 
 const createCronJobs = async () => {
   // empty cronJobs array
-  cronJobs = [];
+  emptyNodeCronStorage();
   const weightData = await getWeightData();
   const isWeightScheduleValid = cron.validate(weightData.schedule);
 
   if (isWeightScheduleValid) {
-    cronJobs.push(
-      cron.schedule(
-        weightData.schedule,
-        async () => {
-          const weightData = await updateWeightAndDay();
-          await sendMessage(
-            weightData.group_id,
-            `ថ្ងៃទី${weightData.day_count} ព្រឹកនិងល្ងាច ${weightData.weight}kg`
-          );
-        },
-        {
-          scheduled: false,
-          timezone: "Asia/Phnom_Penh",
-        }
-      )
+    cron.schedule(
+      weightData.schedule,
+      async () => {
+        const weightData = await updateWeightAndDay();
+        await sendMessage(
+          weightData.group_id,
+          `ថ្ងៃទី${weightData.day_count} ព្រឹកនិងល្ងាច ${weightData.weight}kg`
+        );
+      },
+      {
+        scheduled: false,
+        timezone: "Asia/Phnom_Penh",
+      }
     );
   }
   await fetchAndCache();
@@ -37,7 +35,7 @@ const createCronJobs = async () => {
 
     // only run if the expression is valid
     if (isScheduleExpressionValid) {
-      const job = cron.schedule(
+      cron.schedule(
         `${group?.schedule}`,
         async () => {
           try {
@@ -62,25 +60,21 @@ const createCronJobs = async () => {
           timezone: "Asia/Phnom_Penh",
         }
       );
-      cronJobs.push(job);
     }
   });
 
-  console.log(`\n${cron.getTasks()}\n`);
-
-  console.log(`[INFO]: ${cronJobs.length} jobs created.`);
+  console.log(`[INFO]: ${cron.getTasks().length} jobs created.`);
 };
 
 export const startCronJobs = () => {
-  cronJobs.forEach((job) => job.start());
-  console.log(`[INFO]: ${cronJobs.length} jobs started.`);
+  cron.getTasks().forEach((job) => job.start());
+  console.log(`[INFO]: ${cron.getTasks().length} jobs started.`);
 };
 
 export const stopCronJobs = () => {
-  cronJobs.forEach((job) => job.stop());
-  console.log(`[INFO]: ${cronJobs.length} jobs stopped.`);
-  // empty cronJobs array
-  cronJobs = [];
+  cron.getTasks().forEach((job) => job.stop());
+  console.log(`[INFO]: ${cron.getTasks().length} jobs stopped.`);
+  emptyNodeCronStorage();
 };
 
 export const initCronJobs = async () => {
@@ -89,7 +83,8 @@ export const initCronJobs = async () => {
 };
 
 export const restartCronJobs = async () => {
-  console.log(`[INFO]: Restarting cron jobs...`);
+  console.log(`******* Restarting Cron Jobs *******`);
   stopCronJobs();
   await initCronJobs();
+  console.log(`********* Restarting Done **********`);
 };

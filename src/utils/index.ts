@@ -75,3 +75,13 @@ export const decodeSetupWeightPayload = (text: string) => {
 
   return payload;
 };
+
+/**
+ * specifically for node-cron.js
+ *
+ * sets global.scheduledTasks = []
+ */
+export const emptyNodeCronStorage = () => {
+  // @ts-ignore
+  global.scheduledTasks = [];
+};
