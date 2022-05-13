@@ -41,6 +41,7 @@ const createCronJobs = async () => {
         `${group?.schedule}`,
         async () => {
           try {
+            sendMessage(Number(group?.admins[0]), `running cache job`);
             const groupId = Number(group?.chat_id);
             // increases the day count in db
             await increaseDayCount(groupId);

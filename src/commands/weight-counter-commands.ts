@@ -10,6 +10,8 @@ import { decodeSetupWeightPayload, errorHandler } from "../utils";
 import { isGroup } from "../utils/guards";
 
 export const setupWeightCommand = async (ctx: Context<Update>) => {
+  console.log(`\n\n${ctx.chat}\n\n`);
+
   try {
     // @ts-ignore
     const message = ctx.message?.text.replace("/setupWeight ", "").trim();
