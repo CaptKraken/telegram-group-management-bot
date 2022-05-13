@@ -68,7 +68,8 @@ export const decodeSetupWeightPayload = (text: string) => {
       payload.schedule = flag
         .replace("s ", "")
         .replaceAll(`"`, "")
-        .replaceAll(`'`, "");
+        .replaceAll(`'`, "")
+        .trim();
     }
   });
 

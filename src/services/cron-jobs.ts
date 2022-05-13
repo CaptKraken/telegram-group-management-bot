@@ -16,7 +16,7 @@ const createCronJobs = async () => {
         weightData.schedule,
         async () => {
           const weightData = await updateWeightAndDay();
-          sendMessage(
+          await sendMessage(
             weightData.group_id,
             `ថ្ងៃទី${weightData.day_count} ព្រឹកនិងល្ងាច ${weightData.weight}kg`
           );
@@ -41,7 +41,7 @@ const createCronJobs = async () => {
         `${group?.schedule}`,
         async () => {
           try {
-            sendMessage(Number(group?.admins[0]), `running cache job`);
+            await sendMessage(Number(group?.admins[0]), `running cache job`);
             const groupId = Number(group?.chat_id);
             // increases the day count in db
             await increaseDayCount(groupId);
@@ -49,7 +49,10 @@ const createCronJobs = async () => {
             // send message to the group
             const data = cache.find((g) => g?.chat_id === groupId);
 
-            sendMessage(Number(group?.chat_id), `ថ្ងៃ ${data?.day_count}`);
+            await sendMessage(
+              Number(group?.chat_id),
+              `ថ្ងៃ ${data?.day_count}`
+            );
           } catch (err) {
             console.error(`Cron Job Error\nerror: ${err}`);
           }
@@ -62,6 +65,8 @@ const createCronJobs = async () => {
       cronJobs.push(job);
     }
   });
+
+  console.log(`\n${cron.getTasks()}\n`);
 
   console.log(`[INFO]: ${cronJobs.length} jobs created.`);
 };
