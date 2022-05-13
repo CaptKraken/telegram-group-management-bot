@@ -78,9 +78,9 @@ expressApp.get("/", (req: Request, res: Response) => {
 });
 
 expressApp.listen(process.env.PORT || 3000, async () => {
+  console.log(`[INFO]: App running on port ${process.env.PORT}`);
   console.log(`************* INIT BOT *************`);
   await initCronJobs();
-  console.log("PORT", process.env.PORT);
 
   console.log(`************ INIT  DONE ************`);
 });
