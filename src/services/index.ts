@@ -24,7 +24,6 @@ export {
   startCronJobs,
   stopCronJobs,
   restartCronJobs,
-  cronJobs,
 } from "./cron-jobs";
 
 export {
