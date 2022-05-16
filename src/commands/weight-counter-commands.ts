@@ -7,12 +7,13 @@ import {
 import { Context } from "telegraf";
 import { Update } from "typegram";
 import { decodeSetupWeightPayload, errorHandler } from "../utils";
-import { isGroup } from "../utils/guards";
 
 export const setupWeightCommand = async (ctx: Context<Update>) => {
-  console.log(`\n\n${JSON.stringify(ctx.chat)}\n\n`);
-
   try {
+    const chat = await ctx.getChat();
+    // @ts-ignore
+    const groupName = chat.title;
+    const groupId = chat.id;
     // @ts-ignore
     const message = ctx.message?.text.replace("/setupWeight ", "").trim();
 
@@ -21,7 +22,11 @@ export const setupWeightCommand = async (ctx: Context<Update>) => {
 
     if (!isAllowed) return;
 
-    const payload: SetupWeightDTO = decodeSetupWeightPayload(message);
+    const payload: SetupWeightDTO = {
+      group_id: groupId,
+      group_name: groupName,
+      ...decodeSetupWeightPayload(message),
+    };
 
     await setupWeight(payload);
     sendDisappearingMessage(ctx, `[SUCCESS] - setup successful.`);

@@ -7,9 +7,10 @@ import {
 } from "./db-client";
 
 export type SetupWeightDTO = {
+  group_id: number;
+  group_name: string;
   day_count?: number;
   weight?: number;
-  increase_by?: number;
   schedule?: string;
 };
 export const setupWeight = async (payload: SetupWeightDTO) => {
@@ -18,15 +19,19 @@ export const setupWeight = async (payload: SetupWeightDTO) => {
     await dbClient.connect();
     await dayCountWeightCollection.updateOne(
       {
-        _id: new ObjectId(dayCountWeightDocId),
+        group_id: payload.group_id,
       },
       {
         $set: {
-          day_count: payload.day_count ?? doc.day_count,
-          weight: payload.weight ?? doc.weight,
-          increase_by: payload.increase_by ?? doc.increase_by,
-          schedule: payload.schedule ?? doc.schedule,
+          group_id: payload.group_id,
+          group_name: payload.group_name,
+          day_count: payload.day_count ?? doc.day_count ?? 0,
+          weight: payload.weight ?? doc.weight ?? 0,
+          schedule: payload.schedule ?? doc.schedule ?? "",
         },
+      },
+      {
+        upsert: true,
       }
     );
     await dbClient.close();
@@ -54,22 +59,20 @@ export const getWeightData = async () => {
 
 export const updateWeightAndDay = async () => {
   try {
-    const data = await getWeightData();
     await dbClient.connect();
-    await dayCountWeightCollection.updateOne(
+    const res = await dayCountWeightCollection.findOneAndUpdate(
       {
         _id: new ObjectId(dayCountWeightDocId),
       },
       {
-        $set: {
-          day_count: data.day_count + 1,
-          weight: parseFloat(
-            parseFloat(data.weight + data.increase_by).toFixed(1)
-          ),
+        $inc: {
+          day_count: 1,
         },
       }
     );
     await dbClient.close();
+    console.log("RES", res.value);
+
     const newData = await getWeightData();
     return newData;
   } catch (error) {

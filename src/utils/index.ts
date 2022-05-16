@@ -45,7 +45,6 @@ export const decodeSetupWeightPayload = (text: string) => {
   type WeightSetup = {
     day_count?: number;
     weight?: number;
-    increase_by?: number;
     schedule?: string;
   };
   const payload: WeightSetup = {};
@@ -57,11 +56,6 @@ export const decodeSetupWeightPayload = (text: string) => {
     if (flag.includes("w ")) {
       payload.weight = parseFloat(
         parseFloat(flag.replace("w ", "")).toFixed(1)
-      );
-    }
-    if (flag.includes("i ")) {
-      payload.increase_by = parseFloat(
-        parseFloat(flag.replace("i ", "")).toFixed(1)
       );
     }
     if (flag.includes("s ")) {
