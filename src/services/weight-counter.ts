@@ -60,7 +60,10 @@ export const removeWeight = async (groupId: number) => {
 export const getAllWeightData = async () => {
   try {
     await dbClient.connect();
-    const data = dayCountWeightCollection.find();
+    const data = await dbClient
+      .db("day-count-db")
+      .collection("weight")
+      .findOne();
     await dbClient.close();
     return data;
   } catch (err) {
