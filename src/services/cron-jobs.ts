@@ -25,7 +25,9 @@ const createCronJobs = async () => {
 
           await sendMessage(
             group.group_id,
-            `ថ្ងៃទី${increased.day_count} ព្រឹកនិងល្ងាច ${increased.weight}kg`
+            `ថ្ងៃទី${increased.day_count}${
+              increased.weight && ` ព្រឹកនិងល្ងាច ${increased.weight}kg`
+            }`
           );
         },
         {

@@ -67,6 +67,7 @@ bot.command(COMMANDS.addGroupAnnounce, addGroupAnnounceCommand);
 bot.command(COMMANDS.removeGroupAnnounce, removeGroupAnnounceCommand);
 bot.action(/\bremove-group-action\b -?[1-9]{0,}/g, removeGroupAnnounceAction);
 bot.action(/\bcancel\b/g, cancelAnnounceAction);
+
 //#region STARTING THE SERVER
 setInterval(() => {
   try {
