@@ -11,6 +11,7 @@ export const COMMANDS = {
   emit: "emit",
   removeAdminAction: "remove-admin-action",
   removeGroupAction: "remove-group-action",
+  removeWeight: "removeWeight",
 };
 
 export const everydayAt5AM = "0 0 5 * * *";

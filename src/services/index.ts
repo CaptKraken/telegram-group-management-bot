@@ -17,7 +17,12 @@ export {
 } from "./db-client";
 
 export { sendDisappearingMessage } from "./messaging";
-export { setupWeight, SetupWeightDTO } from "./weight-counter";
+export {
+  setupWeight,
+  removeWeight,
+  getAllWeightData,
+  SetupWeightDTO,
+} from "./weight-counter";
 
 export {
   initCronJobs,

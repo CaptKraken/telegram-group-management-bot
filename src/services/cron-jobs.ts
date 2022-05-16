@@ -2,12 +2,18 @@ import cron from "node-cron";
 import { emptyNodeCronStorage } from "../utils";
 import { cache, fetchAndCache, increaseDayCount } from "./day-counter";
 import { sendMessage } from "./messaging";
-import { getWeightData, updateWeightAndDay } from "./weight-counter";
+import {
+  getAllWeightData,
+  getWeightData,
+  updateWeightAndDay,
+} from "./weight-counter";
 
 const createCronJobs = async () => {
   // empty cronJobs array
   emptyNodeCronStorage();
-  // const weightData = await getWeightData();
+  const weightData = await getAllWeightData();
+  console.log("WEIGHT DATA:", weightData, JSON.stringify(weightData));
+
   // const isWeightScheduleValid = cron.validate(weightData.schedule);
 
   // if (isWeightScheduleValid) {

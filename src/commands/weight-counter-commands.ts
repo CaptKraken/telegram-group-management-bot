@@ -3,6 +3,7 @@ import {
   SetupWeightDTO,
   sendDisappearingMessage,
   restartCronJobs,
+  removeWeight,
 } from "../services";
 import { Context } from "telegraf";
 import { Update } from "typegram";
@@ -29,8 +30,18 @@ export const setupWeightCommand = async (ctx: Context<Update>) => {
     };
 
     await setupWeight(payload);
-    sendDisappearingMessage(ctx, `[SUCCESS] - setup successful.`);
+    sendDisappearingMessage(ctx, `[Success]: setup successful.`);
     await restartCronJobs();
+  } catch (err) {
+    errorHandler(ctx, err);
+  }
+};
+
+export const removeWeightCommand = async (ctx: Context<Update>) => {
+  try {
+    const groupId = Number(ctx.chat?.id);
+    await removeWeight(groupId);
+    await sendDisappearingMessage(ctx, `[Success]: Group removed.`);
   } catch (err) {
     errorHandler(ctx, err);
   }

@@ -6,7 +6,10 @@ export {
   setScheduleCommand,
 } from "./day-counter-commands";
 
-export { setupWeightCommand } from "./weight-counter-commands";
+export {
+  setupWeightCommand,
+  removeWeightCommand,
+} from "./weight-counter-commands";
 
 export {
   emitAnnounceCommand,

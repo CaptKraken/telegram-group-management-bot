@@ -1,4 +1,5 @@
 import { ObjectId } from "mongodb";
+import { errorHandler } from "../utils";
 import { everydayAt5AM } from "../utils/constants";
 import {
   dayCountWeightCollection,
@@ -41,6 +42,29 @@ export const setupWeight = async (payload: SetupWeightDTO) => {
     await dbClient.close();
   } catch (error) {
     throw new Error(`${error}`);
+  }
+};
+
+export const removeWeight = async (groupId: number) => {
+  try {
+    await dbClient.connect();
+    await dayCountWeightCollection.findOneAndDelete({
+      group_id: groupId,
+    });
+    await dbClient.close();
+  } catch (error) {
+    throw new Error(`${error}`);
+  }
+};
+
+export const getAllWeightData = async () => {
+  try {
+    await dbClient.connect();
+    const data = dayCountWeightCollection.find({});
+    await dbClient.close();
+    return data;
+  } catch (err) {
+    throw new Error(`${err}`);
   }
 };
 

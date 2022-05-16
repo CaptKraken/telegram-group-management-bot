@@ -2,7 +2,7 @@ import { Context, Telegraf } from "telegraf";
 import { Update } from "typegram";
 import axios from "axios";
 import dotenv from "dotenv";
-import { COMMANDS, setupWeightRegex } from "./utils";
+import { COMMANDS, errorHandler, setupWeightRegex } from "./utils";
 import express, { Request, Response } from "express";
 import bodyParser from "body-parser";
 import {
@@ -12,13 +12,19 @@ import {
   removeAdminAnnounceCommand,
   removeAdminCommand,
   removeGroupAnnounceCommand,
+  removeWeightCommand,
   setAdminCommand,
   setCountCommand,
   setGroupCommand,
   setScheduleCommand,
   setupWeightCommand,
 } from "./commands";
-import { fetchAnnouncements, initCronJobs } from "./services";
+import {
+  fetchAnnouncements,
+  initCronJobs,
+  removeWeight,
+  sendDisappearingMessage,
+} from "./services";
 import {
   cancelAnnounceAction,
   removeAdminAnnounceAction,
@@ -49,6 +55,7 @@ bot.command(COMMANDS.setSchedule, setScheduleCommand);
 
 // Weight
 bot.hears(setupWeightRegex, setupWeightCommand);
+bot.command(COMMANDS.removeWeight, removeWeightCommand);
 
 // Announce
 bot.command(COMMANDS.emit, emitAnnounceCommand);
@@ -59,7 +66,6 @@ bot.command(COMMANDS.addGroupAnnounce, addGroupAnnounceCommand);
 bot.command(COMMANDS.removeGroupAnnounce, removeGroupAnnounceCommand);
 bot.action(/\bremove-group-action\b -?[1-9]{0,}/g, removeGroupAnnounceAction);
 bot.action(/\bcancel\b/g, cancelAnnounceAction);
-bot.command("ff", async (ctx) => {});
 //#region STARTING THE SERVER
 setInterval(() => {
   try {
