@@ -21,6 +21,7 @@ import {
 } from "./commands";
 import {
   fetchAnnouncements,
+  getAllWeightData,
   initCronJobs,
   removeWeight,
   sendDisappearingMessage,
@@ -87,7 +88,6 @@ expressApp.listen(process.env.PORT || 3000, async () => {
   console.log(`[INFO]: App running on port ${process.env.PORT}`);
   console.log(`************* INIT BOT *************`);
   await initCronJobs();
-
   console.log(`************ INIT  DONE ************`);
 });
 

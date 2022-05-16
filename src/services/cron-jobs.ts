@@ -11,28 +11,30 @@ import {
 const createCronJobs = async () => {
   // empty cronJobs array
   emptyNodeCronStorage();
-  const weightData = await getAllWeightData();
-  const ss = weightData;
-  console.log(`WEIGHT DATA:\n${JSON.stringify(ss)}`);
+  const groups = await getAllWeightData();
 
-  // const isWeightScheduleValid = cron.validate(weightData.schedule);
+  groups.forEach((group) => {
+    const isWeightScheduleValid = cron.validate(group.schedule);
 
-  // if (isWeightScheduleValid) {
-  //   cron.schedule(
-  //     weightData.schedule,
-  //     async () => {
-  //       const weightData = await updateWeightAndDay();
-  //       await sendMessage(
-  //         weightData.group_id,
-  //         `ថ្ងៃទី${weightData.day_count} ព្រឹកនិងល្ងាច ${weightData.weight}kg`
-  //       );
-  //     },
-  //     {
-  //       scheduled: false,
-  //       timezone: "Asia/Phnom_Penh",
-  //     }
-  //   );
-  // }
+    if (isWeightScheduleValid) {
+      cron.schedule(
+        group.schedule,
+        async () => {
+          const increased = await updateWeightAndDay(group.group_id);
+          if (!increased) return;
+
+          await sendMessage(
+            group.group_id,
+            `ថ្ងៃទី${increased.day_count} ព្រឹកនិងល្ងាច ${increased.weight}kg`
+          );
+        },
+        {
+          scheduled: false,
+          timezone: "Asia/Phnom_Penh",
+        }
+      );
+    }
+  });
 
   await fetchAndCache();
 
