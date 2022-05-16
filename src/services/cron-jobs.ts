@@ -12,7 +12,7 @@ const createCronJobs = async () => {
   // empty cronJobs array
   emptyNodeCronStorage();
   const weightData = await getAllWeightData();
-  console.log("WEIGHT DATA:", weightData, JSON.stringify(weightData));
+  console.log(`WEIGHT DATA:\n${weightData.readConcern}`);
 
   // const isWeightScheduleValid = cron.validate(weightData.schedule);
 
