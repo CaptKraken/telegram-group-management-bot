@@ -7,25 +7,26 @@ import { getWeightData, updateWeightAndDay } from "./weight-counter";
 const createCronJobs = async () => {
   // empty cronJobs array
   emptyNodeCronStorage();
-  const weightData = await getWeightData();
-  const isWeightScheduleValid = cron.validate(weightData.schedule);
+  // const weightData = await getWeightData();
+  // const isWeightScheduleValid = cron.validate(weightData.schedule);
 
-  if (isWeightScheduleValid) {
-    cron.schedule(
-      weightData.schedule,
-      async () => {
-        const weightData = await updateWeightAndDay();
-        await sendMessage(
-          weightData.group_id,
-          `ថ្ងៃទី${weightData.day_count} ព្រឹកនិងល្ងាច ${weightData.weight}kg`
-        );
-      },
-      {
-        scheduled: false,
-        timezone: "Asia/Phnom_Penh",
-      }
-    );
-  }
+  // if (isWeightScheduleValid) {
+  //   cron.schedule(
+  //     weightData.schedule,
+  //     async () => {
+  //       const weightData = await updateWeightAndDay();
+  //       await sendMessage(
+  //         weightData.group_id,
+  //         `ថ្ងៃទី${weightData.day_count} ព្រឹកនិងល្ងាច ${weightData.weight}kg`
+  //       );
+  //     },
+  //     {
+  //       scheduled: false,
+  //       timezone: "Asia/Phnom_Penh",
+  //     }
+  //   );
+  // }
+
   await fetchAndCache();
 
   cache.forEach((group) => {

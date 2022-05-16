@@ -13,9 +13,10 @@ export type SetupWeightDTO = {
   weight?: number;
   schedule?: string;
 };
+
 export const setupWeight = async (payload: SetupWeightDTO) => {
   try {
-    const doc = await getWeightData();
+    const doc = await getWeightData(payload.group_id);
     await dbClient.connect();
     await dayCountWeightCollection.updateOne(
       {
@@ -40,11 +41,11 @@ export const setupWeight = async (payload: SetupWeightDTO) => {
   }
 };
 
-export const getWeightData = async () => {
+export const getWeightData = async (groupId: number) => {
   try {
     await dbClient.connect();
     const doc = await dayCountWeightCollection.findOne({
-      _id: new ObjectId(dayCountWeightDocId),
+      group_id: groupId,
     });
     await dbClient.close();
 
@@ -57,12 +58,12 @@ export const getWeightData = async () => {
   }
 };
 
-export const updateWeightAndDay = async () => {
+export const updateWeightAndDay = async (groupId: number) => {
   try {
     await dbClient.connect();
     const res = await dayCountWeightCollection.findOneAndUpdate(
       {
-        _id: new ObjectId(dayCountWeightDocId),
+        group_id: groupId,
       },
       {
         $inc: {
@@ -73,7 +74,7 @@ export const updateWeightAndDay = async () => {
     await dbClient.close();
     console.log("RES", res.value);
 
-    const newData = await getWeightData();
+    const newData = await getWeightData(groupId);
     return newData;
   } catch (error) {
     throw new Error(`Error updating weight data.`);
