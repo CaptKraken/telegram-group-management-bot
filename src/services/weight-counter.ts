@@ -17,6 +17,9 @@ export type SetupWeightDTO = {
 export const setupWeight = async (payload: SetupWeightDTO) => {
   try {
     const doc = await getWeightData(payload.group_id);
+    const dayCount = payload.day_count ?? doc?.day_count ?? 0;
+    const weight = payload.weight ?? doc?.weight ?? 0;
+    const schedule = payload.schedule ?? doc?.schedule ?? "";
     await dbClient.connect();
     await dayCountWeightCollection.updateOne(
       {
@@ -26,9 +29,9 @@ export const setupWeight = async (payload: SetupWeightDTO) => {
         $set: {
           group_id: payload.group_id,
           group_name: payload.group_name,
-          day_count: payload.day_count ?? doc.day_count ?? 0,
-          weight: payload.weight ?? doc.weight ?? 0,
-          schedule: payload.schedule ?? doc.schedule ?? "",
+          day_count: dayCount,
+          weight: weight,
+          schedule: schedule,
         },
       },
       {
@@ -49,9 +52,9 @@ export const getWeightData = async (groupId: number) => {
     });
     await dbClient.close();
 
-    if (!doc) {
-      throw new Error(`No data available.`);
-    }
+    // if (!doc) {
+    //   throw new Error(`No data available.`);
+    // }
     return doc;
   } catch (error) {
     throw new Error(`${error}`);
