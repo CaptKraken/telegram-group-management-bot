@@ -12,6 +12,9 @@ export const COMMANDS = {
   removeAdminAction: "remove-admin-action",
   removeGroupAction: "remove-group-action",
   removeWeight: "removeWeight",
+  createFolder: "createFolder",
+  deleteFolder: "deleteFolder",
+  deleteFolderAction: "delete-folder-action",
 };
 
 export const everydayAt5AM = "0 0 5 * * *";

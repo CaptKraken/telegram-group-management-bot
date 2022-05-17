@@ -2,12 +2,14 @@ import { Context, Telegraf } from "telegraf";
 import { Update } from "typegram";
 import axios from "axios";
 import dotenv from "dotenv";
-import { COMMANDS, errorHandler, setupWeightRegex } from "./utils";
+import { cancelKey, COMMANDS, errorHandler, setupWeightRegex } from "./utils";
 import express, { Request, Response } from "express";
 import bodyParser from "body-parser";
 import {
   addAdminAnnounceCommand,
   addGroupAnnounceCommand,
+  createFolderCommand,
+  deleteFolderCommand,
   emitAnnounceCommand,
   removeAdminAnnounceCommand,
   removeAdminCommand,
@@ -19,13 +21,17 @@ import {
   setScheduleCommand,
   setupWeightCommand,
 } from "./commands";
-import { initCronJobs } from "./services";
+import { initCronJobs, sendDisappearingMessage } from "./services";
 import {
   cancelAnnounceAction,
   removeAdminAnnounceAction,
   removeGroupAnnounceAction,
 } from "./actions";
-import { createFolder, deleteFolder } from "./services/broadcast";
+import {
+  createFolder,
+  deleteFolder,
+  findAllFolders,
+} from "./services/broadcast";
 import { ObjectId } from "mongodb";
 dotenv.config();
 
@@ -55,9 +61,25 @@ bot.hears(setupWeightRegex, setupWeightCommand);
 bot.command(COMMANDS.removeWeight, removeWeightCommand);
 
 // Broadcast
-bot.command("createFolder", async (ctx) => {
-  const message = ctx.message.text;
-  console.log(message.replace("/createFolder", "").trim());
+bot.command(COMMANDS.createFolder, createFolderCommand);
+bot.command(COMMANDS.deleteFolder, deleteFolderCommand);
+bot.action(/\bdelete-folder-action\b/g, async (ctx) => {
+  try {
+    ctx.answerCbQuery();
+    ctx.deleteMessage();
+    // @ts-ignore
+    const callbackData = ctx.callbackQuery.data;
+    if (!callbackData) return;
+    console.log(callbackData);
+
+    // const id = callbackData
+    //   .replaceAll(`${COMMANDS.removeAdminAction}`, "")
+    //   .trim();
+    // await dele(Number(id));
+    // sendDisappearingMessage(ctx, `[SUCCESS]: user removed from admin list.`);
+  } catch (err) {
+    errorHandler(ctx, err);
+  }
 });
 
 // Announce

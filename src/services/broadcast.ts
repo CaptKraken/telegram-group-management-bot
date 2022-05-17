@@ -49,15 +49,14 @@ export const createFolder = async (folder_name: string) => {
     throw new Error(`${error}`);
   }
 };
-export const deleteFolder = async ({ _id, folder_name }: NameOrId) => {
+export const deleteFolder = async (folder_name: string) => {
   try {
-    if (!_id && !folder_name) {
-      throw new Error(`No folder id or name was given.`);
+    if (!folder_name) {
+      throw new Error(`No folder name was given.`);
     }
 
-    const condition = _id ? { _id } : { folder_name };
     await dbClient.connect();
-    await announcementCollection.findOneAndDelete(condition);
+    await announcementCollection.findOneAndDelete({ folder_name });
     await dbClient.close();
   } catch (error) {
     throw new Error(`${error}`);

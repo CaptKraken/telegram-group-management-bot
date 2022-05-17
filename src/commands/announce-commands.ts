@@ -92,7 +92,6 @@ export const removeAdminAnnounceCommand = async (ctx: Context<Update>) => {
       reply_markup: {
         one_time_keyboard: true,
         resize_keyboard: true,
-        force_reply: true,
         inline_keyboard: allKeys,
       },
     });
