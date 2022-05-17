@@ -24,6 +24,7 @@ import {
 import { initCronJobs, sendDisappearingMessage } from "./services";
 import {
   cancelAnnounceAction,
+  deleteFolderAction,
   removeAdminAnnounceAction,
   removeGroupAnnounceAction,
 } from "./actions";
@@ -63,24 +64,7 @@ bot.command(COMMANDS.removeWeight, removeWeightCommand);
 // Broadcast
 bot.command(COMMANDS.createFolder, createFolderCommand);
 bot.command(COMMANDS.deleteFolder, deleteFolderCommand);
-bot.action(/\bdelete-folder-action\b/g, async (ctx) => {
-  try {
-    ctx.answerCbQuery();
-    ctx.deleteMessage();
-    // @ts-ignore
-    const callbackData = ctx.callbackQuery.data;
-    console.log(callbackData);
-    if (!callbackData) return;
-
-    // const id = callbackData
-    //   .replaceAll(`${COMMANDS.removeAdminAction}`, "")
-    //   .trim();
-    // await dele(Number(id));
-    // sendDisappearingMessage(ctx, `[SUCCESS]: user removed from admin list.`);
-  } catch (err) {
-    errorHandler(ctx, err);
-  }
-});
+bot.action(/\bdelete-folder-action\b/g, deleteFolderAction);
 
 // Announce
 bot.command(COMMANDS.emit, emitAnnounceCommand);
