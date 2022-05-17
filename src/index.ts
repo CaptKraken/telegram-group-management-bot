@@ -55,8 +55,9 @@ bot.hears(setupWeightRegex, setupWeightCommand);
 bot.command(COMMANDS.removeWeight, removeWeightCommand);
 
 // Broadcast
-bot.command("/createFolder", async (ctx) => {
-  console.log("what");
+bot.command("createFolder", async (ctx) => {
+  const message = ctx.message.text;
+  console.log(message.replace("/createFolder", "").trim());
 });
 
 // Announce
