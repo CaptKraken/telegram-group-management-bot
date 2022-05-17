@@ -19,18 +19,14 @@ import {
   setScheduleCommand,
   setupWeightCommand,
 } from "./commands";
-import {
-  fetchAnnouncements,
-  getAllWeightData,
-  initCronJobs,
-  removeWeight,
-  sendDisappearingMessage,
-} from "./services";
+import { initCronJobs } from "./services";
 import {
   cancelAnnounceAction,
   removeAdminAnnounceAction,
   removeGroupAnnounceAction,
 } from "./actions";
+import { createFolder, deleteFolder } from "./services/broadcast";
+import { ObjectId } from "mongodb";
 dotenv.config();
 
 const { BOT_TOKEN, SERVER_URL } = process.env;
@@ -57,6 +53,11 @@ bot.command(COMMANDS.setSchedule, setScheduleCommand);
 // Weight
 bot.hears(setupWeightRegex, setupWeightCommand);
 bot.command(COMMANDS.removeWeight, removeWeightCommand);
+
+// Broadcast
+bot.command("/createFolder", async (ctx) => {
+  console.log("what");
+});
 
 // Announce
 bot.command(COMMANDS.emit, emitAnnounceCommand);
