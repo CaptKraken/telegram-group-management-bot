@@ -13,7 +13,9 @@ export const COMMANDS = {
   removeGroupAction: "remove-group-action",
   removeWeight: "removeWeight",
   createFolder: "createFolder",
+  renameFolder: "renameFolder",
   deleteFolder: "deleteFolder",
+  renameFolderAction: "rename-folder-action",
   deleteFolderAction: "delete-folder-action",
 };
 

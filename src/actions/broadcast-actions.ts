@@ -17,7 +17,7 @@ export const deleteFolderAction = async (ctx: Context<Update>) => {
     await deleteFolder(folderName);
     await sendDisappearingMessage(
       ctx,
-      `[SUCCESS]: Folder "${folderName}" deleted successfully.`
+      `[SUCCESS]: Folder "${folderName}" was deleted successfully.`
     );
   } catch (err) {
     errorHandler(ctx, err);

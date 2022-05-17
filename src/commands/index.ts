@@ -19,4 +19,8 @@ export {
   removeGroupAnnounceCommand,
 } from "./announce-commands";
 
-export { createFolderCommand, deleteFolderCommand } from "./broadcast-commands";
+export {
+  createFolderCommand,
+  renameFolderCommand,
+  deleteFolderCommand,
+} from "./broadcast-commands";

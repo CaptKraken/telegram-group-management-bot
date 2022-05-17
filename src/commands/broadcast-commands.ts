@@ -1,11 +1,13 @@
 import {
   createFolder,
   findAllFolders,
+  renameFolder,
   sendDisappearingMessage,
 } from "../services";
 import { Context } from "telegraf";
 import { Update } from "typegram";
 import { cancelKey, COMMANDS, errorHandler } from "../utils";
+import { RenameFolderDTO } from "services/broadcast";
 
 export const createFolderCommand = async (ctx: Context<Update>) => {
   try {
@@ -16,6 +18,51 @@ export const createFolderCommand = async (ctx: Context<Update>) => {
     await sendDisappearingMessage(
       ctx,
       `[Success]: Folder "${folderName}" created.`
+    );
+  } catch (error) {
+    errorHandler(ctx, error);
+  }
+};
+
+export const renameFolderCommand = async (ctx: Context<Update>) => {
+  try {
+    // @ts-ignore
+    const message: string = ctx.message.text;
+    const parts = message
+      .replace(`/${COMMANDS.renameFolder}`, "")
+      .trim()
+      .split("-")
+      .map((part) => part.trim());
+
+    const payload: RenameFolderDTO = {
+      folder_name: "",
+      new_name: "",
+    };
+
+    parts.forEach((part) => {
+      if (part.startsWith("o")) {
+        payload.folder_name = part.replace("o", "").trim();
+      }
+      if (part.startsWith("n")) {
+        payload.new_name = part.replace("n", "").trim();
+      }
+    });
+
+    const isOldNameValid =
+      payload.folder_name && payload.folder_name.length > 0;
+    const isNewNameValid =
+      payload.folder_name && payload.folder_name.length > 0;
+
+    if (!isOldNameValid || !isNewNameValid) {
+      throw new Error(
+        `Old name or new name wasn't given.\ni.e. /renameFolder -o old name -n new name`
+      );
+    }
+
+    await renameFolder(payload);
+    await sendDisappearingMessage(
+      ctx,
+      `[Success]: Folder "${payload.folder_name}" has been succesfully renamed to "${payload.new_name}".`
     );
   } catch (error) {
     errorHandler(ctx, error);

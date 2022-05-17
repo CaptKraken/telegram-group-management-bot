@@ -15,6 +15,7 @@ import {
   removeAdminCommand,
   removeGroupAnnounceCommand,
   removeWeightCommand,
+  renameFolderCommand,
   setAdminCommand,
   setCountCommand,
   setGroupCommand,
@@ -32,6 +33,8 @@ import {
   createFolder,
   deleteFolder,
   findAllFolders,
+  renameFolder,
+  RenameFolderDTO,
 } from "./services/broadcast";
 import { ObjectId } from "mongodb";
 dotenv.config();
@@ -63,6 +66,7 @@ bot.command(COMMANDS.removeWeight, removeWeightCommand);
 
 // Broadcast
 bot.command(COMMANDS.createFolder, createFolderCommand);
+bot.command(COMMANDS.renameFolder, renameFolderCommand);
 bot.command(COMMANDS.deleteFolder, deleteFolderCommand);
 bot.action(/\bdelete-folder-action\b/g, deleteFolderAction);
 

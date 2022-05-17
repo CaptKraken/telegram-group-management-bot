@@ -45,6 +45,7 @@ export {
   findOneFolder,
   findAllFolders,
   createFolder,
+  renameFolder,
   deleteFolder,
   addGroupBroadcast,
   removeGroupBroadcast,

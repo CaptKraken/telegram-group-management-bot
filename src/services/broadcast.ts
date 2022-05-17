@@ -49,6 +49,34 @@ export const createFolder = async (folder_name: string) => {
     throw new Error(`${error}`);
   }
 };
+
+export type RenameFolderDTO = {
+  folder_name: string;
+  new_name: string;
+};
+
+export const renameFolder = async ({
+  folder_name,
+  new_name,
+}: RenameFolderDTO) => {
+  try {
+    await dbClient.connect();
+    await announcementCollection.findOneAndUpdate(
+      {
+        folder_name,
+      },
+      {
+        $set: {
+          folder_name: new_name,
+        },
+      }
+    );
+    await dbClient.close();
+  } catch (error) {
+    throw new Error(`${error}`);
+  }
+};
+
 export const deleteFolder = async (folder_name: string) => {
   try {
     if (!folder_name) {
