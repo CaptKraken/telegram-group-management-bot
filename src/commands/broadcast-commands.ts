@@ -54,7 +54,7 @@ export const renameFolderCommand = async (ctx: Context<Update>) => {
       payload.folder_name && payload.folder_name.length > 0;
 
     if (!isOldNameValid || !isNewNameValid) {
-      throw new Error(
+      ctx.reply(
         `Old name or new name wasn't given.\ni.e. /renameFolder -o old name -n new name`
       );
     }
