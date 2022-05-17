@@ -69,8 +69,8 @@ bot.action(/\bdelete-folder-action\b/g, async (ctx) => {
     ctx.deleteMessage();
     // @ts-ignore
     const callbackData = ctx.callbackQuery.data;
-    if (!callbackData) return;
     console.log(callbackData);
+    if (!callbackData) return;
 
     // const id = callbackData
     //   .replaceAll(`${COMMANDS.removeAdminAction}`, "")

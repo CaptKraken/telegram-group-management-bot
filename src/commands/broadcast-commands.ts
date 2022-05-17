@@ -54,7 +54,7 @@ export const deleteFolderCommand = async (ctx: Context<Update>) => {
       reply_markup: {
         resize_keyboard: true,
         one_time_keyboard: true,
-        keyboard: allKeys,
+        inline_keyboard: allKeys,
       },
     });
   } catch (error) {
