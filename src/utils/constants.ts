@@ -17,6 +17,10 @@ export const COMMANDS = {
   deleteFolder: "deleteFolder",
   renameFolderAction: "rename-folder-action",
   deleteFolderAction: "delete-folder-action",
+  addGroupBroadcast: "addGroupBroadcast",
+  addGroupBroadcastAction: "add-group-broadcast-action",
+  removeGroupBroadcast: "removeGroupBroadcast",
+  removeGroupBroadcastAction: "remove-group-broadcast-action",
 };
 
 export const everydayAt5AM = "0 0 5 * * *";

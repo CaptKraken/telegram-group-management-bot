@@ -69,12 +69,11 @@ bot.command(COMMANDS.createFolder, createFolderCommand);
 bot.command(COMMANDS.renameFolder, renameFolderCommand);
 bot.command(COMMANDS.deleteFolder, deleteFolderCommand);
 bot.action(/\bdelete-folder-action\b/g, deleteFolderAction);
-
-bot.command("/test", async (ctx) => {
+bot.command(COMMANDS.addGroupBroadcast, async (ctx) => {
   try {
     const folders = await findAllFolders();
     if (folders.length < 1) {
-      await ctx.reply("[Info]: No folder found.");
+      await ctx.reply("[Info]: No folders found.");
       return;
     }
 
@@ -88,7 +87,7 @@ bot.command("/test", async (ctx) => {
     folders.forEach(({ folder_name }, i) => {
       tempKeys.push({
         text: folder_name,
-        callback_data: `test-action ${folder_name}`,
+        callback_data: `${COMMANDS.addGroupBroadcastAction} ${folder_name}`,
       });
       if (tempKeys.length === 2 || folders.length - 1 === i) {
         allKeys.push(tempKeys);
@@ -98,9 +97,8 @@ bot.command("/test", async (ctx) => {
     if (allKeys.length > 0) {
       allKeys.push(cancelKey);
     }
-    await ctx.reply(`Rename:`, {
+    await ctx.reply(`Add group to:`, {
       reply_markup: {
-        force_reply: true,
         resize_keyboard: true,
         one_time_keyboard: true,
         inline_keyboard: allKeys,
@@ -110,22 +108,30 @@ bot.command("/test", async (ctx) => {
     errorHandler(ctx, error);
   }
 });
-bot.action(/\btest-action\b/g, async (ctx) => {
+bot.action(/\badd-group-broadcast-action\b/g, async (ctx) => {
   try {
     ctx.answerCbQuery();
-    console.log(ctx);
-
+    ctx.deleteMessage();
     // @ts-ignore
     const callbackData = ctx.callbackQuery.data;
     if (!callbackData) return;
 
     const folderName = callbackData
-      .replaceAll(`${COMMANDS.deleteFolderAction}`, "")
+      .replaceAll(`${COMMANDS.addGroupBroadcastAction}`, "")
       .trim();
+    console.log(folderName);
+    console.log(ctx);
+
+    // await deleteFolder(folderName);
+    // await sendDisappearingMessage(
+    //   ctx,
+    //   `[SUCCESS]: Folder "${folderName}" was deleted successfully.`
+    // );
   } catch (err) {
     errorHandler(ctx, err);
   }
 });
+
 // Announce
 bot.command(COMMANDS.emit, emitAnnounceCommand);
 bot.command(COMMANDS.addAdminAnnounce, addAdminAnnounceCommand);
