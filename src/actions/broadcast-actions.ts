@@ -37,7 +37,7 @@ export const emitBroadcastAction = async (ctx: Context<Update>) => {
       if (part.startsWith("f")) {
         folderName = part.slice(1);
       }
-      if (part.startsWith("g")) {
+      if (part.startsWith("m")) {
         message = part.slice(1);
       }
     });
