@@ -98,12 +98,38 @@ export const deleteFolder = async (folder_name: string) => {
   }
 };
 
+type BroadcastFolder = {
+  _id: ObjectId;
+  folder_name: string;
+  groups: BroadcastGroup[];
+};
+
+type BroadcastGroup = {
+  group_id: number;
+  group_name: string;
+};
+
 export const addGroupBroadcast = async (
   { _id, folder_name }: NameOrId,
   group_id: number,
   group_name: string
 ) => {
   try {
+    const folder = await findOneFolder({ folder_name });
+    // @ts-ignore
+    const groups: BroadcastGroup[] = folder.groups;
+
+    const isAlreadyInGroup =
+      folder &&
+      groups &&
+      groups.find((group) => group.group_id === group_id) !== undefined;
+
+    if (isAlreadyInGroup) {
+      throw new Error(
+        `Group "${group_name}" is already in the folder "${folder_name}".`
+      );
+    }
+
     if (!_id && !folder_name) {
       throw new Error(`No folder id or name was given.`);
     }
@@ -112,7 +138,7 @@ export const addGroupBroadcast = async (
 
     await dbClient.connect();
     await announcementCollection.updateOne(condition, {
-      $addToSet: {
+      $push: {
         groups: {
           group_id,
           group_name,
