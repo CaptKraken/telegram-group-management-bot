@@ -14,6 +14,7 @@ import bodyParser from "body-parser";
 import {
   addAdminAnnounceCommand,
   addGroupAnnounceCommand,
+  addGroupBroadcastCommand,
   createFolderCommand,
   deleteFolderCommand,
   emitAnnounceCommand,
@@ -31,10 +32,13 @@ import {
 } from "./commands";
 import { initCronJobs, sendDisappearingMessage } from "./services";
 import {
+  addGroupBroadcastAction,
   cancelAnnounceAction,
   deleteFolderAction,
+  goBackBroadcastAction,
   removeAdminAnnounceAction,
   removeGroupAnnounceAction,
+  showRemoveGroupBroadcastAction,
 } from "./actions";
 import {
   addGroupBroadcast,
@@ -81,138 +85,32 @@ bot.command(COMMANDS.createFolder, createFolderCommand);
 bot.command(COMMANDS.renameFolder, renameFolderCommand);
 bot.command(COMMANDS.deleteFolder, deleteFolderCommand);
 bot.action(/\bdelete-folder-action\b/g, deleteFolderAction);
-bot.command(COMMANDS.addGroupBroadcast, async (ctx) => {
-  try {
-    if (!isGroup(ctx)) {
-      throw new Error(`Only available for group.`);
-    }
-    const folders = await findAllFolders();
-    if (folders.length < 1) {
-      await ctx.reply("[Info]: No folders found.");
-      return;
-    }
-
-    type Keyboard = {
-      callback_data: string;
-      text: string;
-    };
-
-    const allKeys: any[] = [];
-    let tempKeys: Keyboard[] = [];
-    folders.forEach(({ folder_name }, i) => {
-      tempKeys.push({
-        text: folder_name,
-        callback_data: `${COMMANDS.addGroupBroadcastAction} ${folder_name}`,
-      });
-      if (tempKeys.length === 2 || folders.length - 1 === i) {
-        allKeys.push(tempKeys);
-        tempKeys = [];
-      }
-    });
-    if (allKeys.length > 0) {
-      allKeys.push(cancelKey);
-    }
-    await ctx.reply(`Add group to:`, {
-      reply_markup: {
-        resize_keyboard: true,
-        one_time_keyboard: true,
-        inline_keyboard: allKeys,
-      },
-    });
-  } catch (error) {
-    errorHandler(ctx, error);
-  }
-});
-bot.action(/\badd-group-broadcast-action\b/g, async (ctx) => {
-  try {
-    ctx.answerCbQuery();
-    ctx.deleteMessage();
-
-    // @ts-ignore
-    const callbackData = ctx.callbackQuery.data;
-    if (!callbackData) return;
-
-    const folderName = callbackData
-      .replaceAll(`${COMMANDS.addGroupBroadcastAction}`, "")
-      .trim();
-
-    if (!folderName) {
-      throw new Error(`Folder not found.`);
-    }
-    const chat = await ctx.getChat();
-    // @ts-ignore
-    await addGroupBroadcast({ folder_name: folderName }, chat.id, chat.title);
-
-    await sendDisappearingMessage(
-      ctx,
-      // @ts-ignore
-      `[SUCCESS]: Group "${chat.title}" was successfully added to "${folderName}"`
-    );
-  } catch (err) {
-    errorHandler(ctx, err);
-  }
-});
+bot.command(COMMANDS.addGroupBroadcast, addGroupBroadcastCommand);
+bot.action(/\badd-group-broadcast-action\b/g, addGroupBroadcastAction);
 bot.command(COMMANDS.removeGroupBroadcast, removeGroupBroadcastCommand);
 
+bot.action(
+  /\bshow-remove-group-broadcast-action\b/g,
+  showRemoveGroupBroadcastAction
+);
+
 bot.action(/\bremove-group-broadcast-action\b/g, async (ctx) => {
-  try {
-    ctx.answerCbQuery();
-    ctx.deleteMessage();
+  // removeGroupBroadcastAction
+  ctx.answerCbQuery();
+  ctx.deleteMessage();
 
-    // @ts-ignore
-    const callbackData = ctx.callbackQuery.data;
-    if (!callbackData) return;
+  // @ts-ignore
+  const callbackData = ctx.callbackQuery.data;
+  if (!callbackData) return;
 
-    const folderName = callbackData
-      .replaceAll(`${COMMANDS.removeGroupBroadcastAction}`, "")
-      .trim();
-
-    const folderData = await findOneFolder({ folder_name: `${folderName}` });
-
-    if (!folderName || !folderData) {
-      throw new Error(`Folder not found.`);
-    }
-
-    const groups: BroadcastGroup[] = folderData.groups;
-
-    type Keyboard = {
-      callback_data: string;
-      text: string;
-    };
-
-    const allKeys: any[] = [];
-    let tempKeys: Keyboard[] = [];
-    groups.forEach(({ group_id, group_name }, i) => {
-      tempKeys.push({
-        text: group_name,
-        callback_data: `${COMMANDS.removeGroupBroadcastAction} ${group_id}`,
-      });
-      if (tempKeys.length === 2 || groups.length - 1 === i) {
-        allKeys.push(tempKeys);
-        tempKeys = [];
-      }
-    });
-    if (allKeys.length > 0) {
-      allKeys.push(goBackBroadcastKey);
-      allKeys.push(cancelKey);
-    }
-    await ctx.reply(`Select group:`, {
-      reply_markup: {
-        resize_keyboard: true,
-        one_time_keyboard: true,
-        inline_keyboard: allKeys,
-      },
-    });
-  } catch (err) {
-    errorHandler(ctx, err);
-  }
+  const clean = callbackData
+    .replaceAll(`${COMMANDS.removeGroupBroadcastAction}`, "")
+    .trim()
+    .split("-");
+  console.log(clean);
 });
 
-bot.action(/\bgo-back-broadcast-action\b/g, async (ctx) => {
-  await ctx.answerCbQuery();
-  await ctx.deleteMessage();
-  await removeGroupBroadcastCommand(ctx);
-});
+bot.action(/\bgo-back-broadcast-action\b/g, goBackBroadcastAction);
 
 // Announce
 bot.command(COMMANDS.emit, emitAnnounceCommand);

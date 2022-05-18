@@ -21,6 +21,7 @@ export const COMMANDS = {
   addGroupBroadcastAction: "add-group-broadcast-action",
   removeGroupBroadcast: "removeGroupBroadcast",
   removeGroupBroadcastAction: "remove-group-broadcast-action",
+  showRemoveGroupBroadcastAction: "show-remove-group-broadcast-action",
   goBackBroadcastAction: "go-back-broadcast-action",
 };
 

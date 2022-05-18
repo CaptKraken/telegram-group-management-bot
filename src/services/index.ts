@@ -42,6 +42,8 @@ export {
 } from "./announce";
 
 export {
+  BroadcastFolder,
+  BroadcastGroup,
   findOneFolder,
   findAllFolders,
   createFolder,

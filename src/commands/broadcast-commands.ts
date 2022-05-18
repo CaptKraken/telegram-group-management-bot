@@ -8,6 +8,7 @@ import { Context } from "telegraf";
 import { Update } from "typegram";
 import { cancelKey, COMMANDS, errorHandler } from "../utils";
 import { RenameFolderDTO } from "services/broadcast";
+import { isGroup } from "../utils/guards";
 
 export const createFolderCommand = async (ctx: Context<Update>) => {
   try {
@@ -109,6 +110,49 @@ export const deleteFolderCommand = async (ctx: Context<Update>) => {
   }
 };
 
+export const addGroupBroadcastCommand = async (ctx: Context<Update>) => {
+  try {
+    if (!isGroup(ctx)) {
+      throw new Error(`Only available for group.`);
+    }
+    const folders = await findAllFolders();
+    if (folders.length < 1) {
+      await ctx.reply("[Info]: No folders found.");
+      return;
+    }
+
+    type Keyboard = {
+      callback_data: string;
+      text: string;
+    };
+
+    const allKeys: any[] = [];
+    let tempKeys: Keyboard[] = [];
+    folders.forEach(({ folder_name }, i) => {
+      tempKeys.push({
+        text: folder_name,
+        callback_data: `${COMMANDS.addGroupBroadcastAction} ${folder_name}`,
+      });
+      if (tempKeys.length === 2 || folders.length - 1 === i) {
+        allKeys.push(tempKeys);
+        tempKeys = [];
+      }
+    });
+    if (allKeys.length > 0) {
+      allKeys.push(cancelKey);
+    }
+    await ctx.reply(`Add group to:`, {
+      reply_markup: {
+        resize_keyboard: true,
+        one_time_keyboard: true,
+        inline_keyboard: allKeys,
+      },
+    });
+  } catch (error) {
+    errorHandler(ctx, error);
+  }
+};
+
 export const removeGroupBroadcastCommand = async (ctx: Context<Update>) => {
   try {
     const folders = await findAllFolders();
@@ -127,7 +171,7 @@ export const removeGroupBroadcastCommand = async (ctx: Context<Update>) => {
     folders.forEach(({ folder_name }, i) => {
       tempKeys.push({
         text: folder_name,
-        callback_data: `${COMMANDS.removeGroupBroadcastAction} ${folder_name}`,
+        callback_data: `${COMMANDS.showRemoveGroupBroadcastAction} ${folder_name}`,
       });
       if (tempKeys.length === 2 || folders.length - 1 === i) {
         allKeys.push(tempKeys);

@@ -23,5 +23,6 @@ export {
   createFolderCommand,
   renameFolderCommand,
   deleteFolderCommand,
+  addGroupBroadcastCommand,
   removeGroupBroadcastCommand,
 } from "./broadcast-commands";
