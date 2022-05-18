@@ -21,6 +21,7 @@ export const COMMANDS = {
   addGroupBroadcastAction: "add-group-broadcast-action",
   removeGroupBroadcast: "removeGroupBroadcast",
   removeGroupBroadcastAction: "remove-group-broadcast-action",
+  goBackBroadcastAction: "go-back-broadcast-action",
 };
 
 export const everydayAt5AM = "0 0 5 * * *";
@@ -35,4 +36,7 @@ export const cancelKey = [
     text: "Cancel",
     callback_data: "cancel",
   },
+];
+export const goBackBroadcastKey = [
+  { text: "Go Back", callback_data: COMMANDS.goBackBroadcastAction },
 ];

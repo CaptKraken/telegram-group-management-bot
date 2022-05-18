@@ -98,13 +98,13 @@ export const deleteFolder = async (folder_name: string) => {
   }
 };
 
-type BroadcastFolder = {
+export type BroadcastFolder = {
   _id: ObjectId;
   folder_name: string;
   groups: BroadcastGroup[];
 };
 
-type BroadcastGroup = {
+export type BroadcastGroup = {
   group_id: number;
   group_name: string;
 };
