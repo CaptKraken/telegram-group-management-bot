@@ -38,7 +38,7 @@ export const addGroupBroadcastAction = async (ctx: Context<Update>) => {
     await sendDisappearingMessage(
       ctx,
       // @ts-ignore
-      `[SUCCESS]: Group "${chat.title}" was successfully added to "${folderName}"`
+      `[SUCCESS]: Group "${chat.title}" was successfully added to "${folderName}."`
     );
   } catch (err) {
     errorHandler(ctx, err);
@@ -80,6 +80,8 @@ export const showRemoveGroupBroadcastAction = async (ctx: Context<Update>) => {
       .trim();
 
     const folderData = await findOneFolder({ folder_name: `${folderName}` });
+
+    console.log("HERE", folderName, folderData);
 
     if (!folderName || !folderData) {
       throw new Error(`Folder not found.`);
