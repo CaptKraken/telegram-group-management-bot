@@ -115,6 +115,8 @@ bot.action(/\badd-group-broadcast-action\b/g, async (ctx) => {
     ctx.answerCbQuery();
     ctx.deleteMessage();
 
+    console.log("is group", isGroup(ctx));
+
     if (!isGroup(ctx)) {
       throw new Error(`Only available for group.`);
     }
