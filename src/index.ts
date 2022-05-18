@@ -120,6 +120,10 @@ bot.action(/\badd-group-broadcast-action\b/g, async (ctx) => {
     const folderName = callbackData
       .replaceAll(`${COMMANDS.addGroupBroadcastAction}`, "")
       .trim();
+
+    if (!folderName) {
+      throw new Error(`Folder not found.`);
+    }
     const chat = await ctx.getChat();
     // @ts-ignore
     await addGroupBroadcast({ folder_name: folderName }, chat.id, chat.title);
