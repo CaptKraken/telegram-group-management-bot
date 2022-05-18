@@ -16,6 +16,58 @@ import {
   goBackBroadcastKey,
 } from "../utils";
 
+export const emitBroadcastAction = async (ctx: Context<Update>) => {
+  try {
+    ctx.answerCbQuery();
+    ctx.deleteMessage();
+
+    // @ts-ignore
+    const callbackData = ctx.callbackQuery.data;
+    if (!callbackData) return;
+
+    const parts = callbackData
+      .replace(COMMANDS.emit, "")
+      .split(" -")
+      .map((part) => part);
+
+    let folderName = "",
+      message = "";
+
+    parts.forEach((part) => {
+      if (part.startsWith("f")) {
+        folderName = part.slice(1);
+      }
+      if (part.startsWith("g")) {
+        message = part.slice(1);
+      }
+    });
+
+    if (!folderName || !message) {
+      throw new Error("Error decoding data.");
+    }
+
+    const folder = await findOneFolder({ folder_name: folderName });
+
+    if (!folder) {
+      throw new Error("Folder not found.");
+    }
+    if (!folder.groups || folder.groups.length < 1) {
+      throw new Error("Folder has 0 group.");
+    }
+
+    const groups: BroadcastGroup[] = folder.groups;
+
+    groups.forEach((group, i) => {
+      ctx.telegram.sendMessage(group.group_id, message);
+      if (i === groups.length - 1) {
+        ctx.reply("Emission done.");
+      }
+    });
+  } catch (error) {
+    errorHandler(ctx, error);
+  }
+};
+
 export const addGroupBroadcastAction = async (ctx: Context<Update>) => {
   try {
     ctx.answerCbQuery();

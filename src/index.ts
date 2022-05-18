@@ -4,13 +4,14 @@ import axios from "axios";
 import dotenv from "dotenv";
 import express, { Request, Response } from "express";
 import bodyParser from "body-parser";
-import { cancelKey, COMMANDS, setupWeightRegex } from "./utils";
+import { COMMANDS, setupWeightRegex } from "./utils";
 
-import { findAllFolders, findOneFolder, initCronJobs } from "./services";
+import { initCronJobs } from "./services";
 import {
   addGroupBroadcastCommand,
   createFolderCommand,
   deleteFolderCommand,
+  emitBroadcastCommand,
   removeAdminCommand,
   removeGroupBroadcastCommand,
   removeWeightCommand,
@@ -25,6 +26,7 @@ import {
   addGroupBroadcastAction,
   cancelAction,
   deleteFolderAction,
+  emitBroadcastAction,
   goBackBroadcastAction,
   removeGroupBroadcastAction,
   showRemoveGroupBroadcastAction,
@@ -37,8 +39,6 @@ const bot: Telegraf<Context<Update>> = new Telegraf(BOT_TOKEN as string);
 const expressApp = express();
 expressApp.use(bodyParser.json());
 export const TELEGRAM_API = `https://api.telegram.org/bot${BOT_TOKEN}`;
-const URI = `/webhook/${BOT_TOKEN}`;
-const WEBHOOK_URL = SERVER_URL + URI;
 
 bot.start((ctx) => ctx.reply("Welcome"));
 bot.help((ctx) => ctx.reply("Send me a sticker"));
@@ -72,85 +72,8 @@ bot.action(/\bremove-group-broadcast-action\b/g, removeGroupBroadcastAction);
 bot.action(/\bgo-back-broadcast-action\b/g, goBackBroadcastAction);
 bot.action(/\bcancel\b/g, cancelAction);
 
-bot.command(COMMANDS.emit, async (ctx) => {
-  const message = ctx.message.text
-    .replace(`/${COMMANDS.emit} `, "")
-    .replace(`/${COMMANDS.emit}\n`, "")
-    .trim();
-
-  const folders = await findAllFolders();
-  if (folders.length < 1) {
-    await ctx.reply("[Info]: No folder found.");
-    return;
-  }
-
-  type Keyboard = {
-    callback_data: string;
-    text: string;
-  };
-
-  const allKeys: any[] = [];
-  let tempKeys: Keyboard[] = [];
-  folders.forEach(({ folder_name, groups }, i) => {
-    if (groups.length < 1) {
-      tempKeys.push({
-        text: `${folder_name} (${groups.length})`,
-        callback_data: `${COMMANDS.emit} -f${folder_name} -m${message}`,
-      });
-    }
-    if (tempKeys.length === 2 || folders.length - 1 === i) {
-      allKeys.push(tempKeys);
-      tempKeys = [];
-    }
-  });
-  if (allKeys.length > 0) {
-    allKeys.push(cancelKey);
-  }
-  await ctx.reply(`Select folder:\n(Folders with 0 group are hidden)`, {
-    reply_markup: {
-      resize_keyboard: true,
-      one_time_keyboard: true,
-      inline_keyboard: allKeys,
-    },
-  });
-});
-bot.action(/\bemit\b/g, async (ctx) => {
-  ctx.answerCbQuery();
-  ctx.deleteMessage();
-
-  // @ts-ignore
-  const callbackData = ctx.callbackQuery.data;
-  if (!callbackData) return;
-
-  const parts = callbackData
-    .replace(COMMANDS.emit, "")
-    .split(" -")
-    .map((part) => part);
-
-  let folderName, message;
-
-  parts.forEach((part) => {
-    if (part.startsWith("f")) {
-      folderName = part.slice(1);
-    }
-    if (part.startsWith("g")) {
-      message = part.slice(1);
-    }
-  });
-
-  if (!folderName || !message) {
-    throw new Error("Error decoding data.");
-  }
-
-  const folder = await findOneFolder({ folder_name: folderName });
-
-  if (!folder) {
-    throw new Error("Folder not found.");
-  }
-  if (!folder.groups || folder.groups.length < 1) {
-    throw new Error("Folder has 0 group.");
-  }
-});
+bot.command(COMMANDS.emit, emitBroadcastCommand);
+bot.action(/\bemit\b/g, emitBroadcastAction);
 
 //#region STARTING THE SERVER
 setInterval(() => {

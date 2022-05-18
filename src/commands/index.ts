@@ -12,6 +12,7 @@ export {
 } from "./weight-counter-commands";
 
 export {
+  emitBroadcastCommand,
   createFolderCommand,
   renameFolderCommand,
   deleteFolderCommand,

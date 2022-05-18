@@ -12,24 +12,46 @@ import { RenameFolderDTO } from "services/broadcast";
 import { isGroup } from "../utils/guards";
 
 export const emitBroadcastCommand = async (ctx: Context<Update>) => {
-  const isAdmin = await isBroadcastAdmin(Number(ctx.from?.id));
-  if (!isAdmin) return;
-
   // @ts-ignore
-  const msg = ctx.message.text
+  const message = ctx.message.text
     .replace(`/${COMMANDS.emit} `, "")
     .replace(`/${COMMANDS.emit}\n`, "")
     .trim();
 
-  if (!msg) return;
-  const data = await findAllFolders();
-  // @ts-ignore
-  const groups = data.groups;
-  groups.forEach((group: { group_id: string | number }, i: number) => {
-    ctx.telegram.sendMessage(group.group_id, msg);
-    if (groups.length - 1 === i) {
-      ctx.reply(`[Success]: emission completed.`);
+  const folders = await findAllFolders();
+  if (folders.length < 1) {
+    await ctx.reply("[Info]: No folder found.");
+    return;
+  }
+
+  type Keyboard = {
+    callback_data: string;
+    text: string;
+  };
+
+  const allKeys: any[] = [];
+  let tempKeys: Keyboard[] = [];
+  folders.forEach(({ folder_name, groups }, i) => {
+    if (groups.length < 1) {
+      tempKeys.push({
+        text: `${folder_name} (${groups.length})`,
+        callback_data: `${COMMANDS.emit} -f${folder_name} -m${message}`,
+      });
     }
+    if (tempKeys.length === 2 || folders.length - 1 === i) {
+      allKeys.push(tempKeys);
+      tempKeys = [];
+    }
+  });
+  if (allKeys.length > 0) {
+    allKeys.push(cancelKey);
+  }
+  await ctx.reply(`Select folder:\n(Folders with 0 group are hidden)`, {
+    reply_markup: {
+      resize_keyboard: true,
+      one_time_keyboard: true,
+      inline_keyboard: allKeys,
+    },
   });
 };
 
