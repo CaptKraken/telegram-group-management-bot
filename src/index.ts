@@ -6,7 +6,7 @@ import express, { Request, Response } from "express";
 import bodyParser from "body-parser";
 import { cancelKey, COMMANDS, setupWeightRegex } from "./utils";
 
-import { findAllFolders, initCronJobs } from "./services";
+import { findAllFolders, findOneFolder, initCronJobs } from "./services";
 import {
   addGroupBroadcastCommand,
   createFolderCommand,
@@ -92,10 +92,12 @@ bot.command(COMMANDS.emit, async (ctx) => {
   const allKeys: any[] = [];
   let tempKeys: Keyboard[] = [];
   folders.forEach(({ folder_name, groups }, i) => {
-    tempKeys.push({
-      text: `${folder_name} (${groups.length})`,
-      callback_data: `${COMMANDS.emit} -f${folder_name} -m${message}`,
-    });
+    if (groups.length < 1) {
+      tempKeys.push({
+        text: `${folder_name} (${groups.length})`,
+        callback_data: `${COMMANDS.emit} -f${folder_name} -m${message}`,
+      });
+    }
     if (tempKeys.length === 2 || folders.length - 1 === i) {
       allKeys.push(tempKeys);
       tempKeys = [];
@@ -104,7 +106,7 @@ bot.command(COMMANDS.emit, async (ctx) => {
   if (allKeys.length > 0) {
     allKeys.push(cancelKey);
   }
-  await ctx.reply(`Select folder:`, {
+  await ctx.reply(`Select folder:\n(Folders with 0 group are hidden)`, {
     reply_markup: {
       resize_keyboard: true,
       one_time_keyboard: true,
@@ -120,7 +122,34 @@ bot.action(/\bemit\b/g, async (ctx) => {
   const callbackData = ctx.callbackQuery.data;
   if (!callbackData) return;
 
-  console.log(callbackData);
+  const parts = callbackData
+    .replace(COMMANDS.emit, "")
+    .split(" -")
+    .map((part) => part);
+
+  let folderName, message;
+
+  parts.forEach((part) => {
+    if (part.startsWith("f")) {
+      folderName = part.slice(1);
+    }
+    if (part.startsWith("g")) {
+      message = part.slice(1);
+    }
+  });
+
+  if (!folderName || !message) {
+    throw new Error("Error decoding data.");
+  }
+
+  const folder = await findOneFolder({ folder_name: folderName });
+
+  if (!folder) {
+    throw new Error("Folder not found.");
+  }
+  if (!folder.groups || folder.groups.length < 1) {
+    throw new Error("Folder has 0 group.");
+  }
 });
 
 //#region STARTING THE SERVER
