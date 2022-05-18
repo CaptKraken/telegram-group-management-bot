@@ -75,15 +75,11 @@ export const showRemoveGroupBroadcastAction = async (ctx: Context<Update>) => {
     const callbackData = ctx.callbackQuery.data;
     if (!callbackData) return;
 
-    console.log(callbackData);
-
     const folderName = callbackData
       .replaceAll(`${COMMANDS.showRemoveGroupBroadcastAction}`, "")
       .trim();
 
     const folderData = await findOneFolder({ folder_name: `${folderName}` });
-
-    console.log("HERE", folderName, folderData);
 
     if (!folderName || !folderData) {
       throw new Error(`Folder not found.`);

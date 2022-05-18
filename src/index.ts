@@ -48,6 +48,7 @@ import {
   deleteFolder,
   findAllFolders,
   findOneFolder,
+  removeGroupBroadcast,
   renameFolder,
   RenameFolderDTO,
 } from "./services/broadcast";
@@ -95,19 +96,48 @@ bot.action(
 );
 
 bot.action(/\bremove-group-broadcast-action\b/g, async (ctx) => {
-  // removeGroupBroadcastAction
-  ctx.answerCbQuery();
-  ctx.deleteMessage();
+  try {
+    ctx.answerCbQuery();
+    ctx.deleteMessage();
 
-  // @ts-ignore
-  const callbackData = ctx.callbackQuery.data;
-  if (!callbackData) return;
+    // @ts-ignore
+    const callbackData = ctx.callbackQuery.data;
+    if (!callbackData) return;
 
-  const clean = callbackData
-    .replaceAll(`${COMMANDS.removeGroupBroadcastAction}`, "")
-    .trim()
-    .split("-");
-  console.log(clean);
+    const parts = callbackData
+      .replaceAll(`${COMMANDS.removeGroupBroadcastAction}`, "")
+      .split(" -")
+      .filter((part) => part);
+
+    const payload = {
+      folder_name: "",
+      group_id: 0,
+    };
+
+    parts.forEach((part) => {
+      if (part.startsWith("f")) {
+        payload.folder_name = part.substring(1);
+      }
+      if (part.startsWith("g")) {
+        payload.group_id = Number(part.substring(1));
+      }
+    });
+
+    if (!payload.folder_name || !payload.group_id) {
+      throw new Error(`Error decoding remove group broadcast action.`);
+    }
+
+    await removeGroupBroadcast(
+      { folder_name: payload.folder_name },
+      payload.group_id
+    );
+    await sendDisappearingMessage(
+      ctx,
+      `[Success]: Group removed from "${payload.folder_name}"`
+    );
+  } catch (error) {
+    errorHandler(ctx, error);
+  }
 });
 
 bot.action(/\bgo-back-broadcast-action\b/g, goBackBroadcastAction);
