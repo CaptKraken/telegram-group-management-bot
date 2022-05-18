@@ -38,6 +38,7 @@ import {
   RenameFolderDTO,
 } from "./services/broadcast";
 import { ObjectId } from "mongodb";
+import { isGroup } from "utils/guards";
 dotenv.config();
 
 const { BOT_TOKEN, SERVER_URL } = process.env;
@@ -113,6 +114,11 @@ bot.action(/\badd-group-broadcast-action\b/g, async (ctx) => {
   try {
     ctx.answerCbQuery();
     ctx.deleteMessage();
+
+    if (!isGroup(ctx)) {
+      throw new Error(`Only available for group.`);
+    }
+
     // @ts-ignore
     const callbackData = ctx.callbackQuery.data;
     if (!callbackData) return;
