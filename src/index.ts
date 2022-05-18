@@ -30,6 +30,7 @@ import {
   removeGroupAnnounceAction,
 } from "./actions";
 import {
+  addGroupBroadcast,
   createFolder,
   deleteFolder,
   findAllFolders,
@@ -119,14 +120,15 @@ bot.action(/\badd-group-broadcast-action\b/g, async (ctx) => {
     const folderName = callbackData
       .replaceAll(`${COMMANDS.addGroupBroadcastAction}`, "")
       .trim();
-    console.log(folderName);
-    console.log(ctx);
+    const chat = await ctx.getChat();
+    // @ts-ignore
+    await addGroupBroadcast({ folder_name: folderName }, chat.id, chat.title);
 
-    // await deleteFolder(folderName);
-    // await sendDisappearingMessage(
-    //   ctx,
-    //   `[SUCCESS]: Folder "${folderName}" was deleted successfully.`
-    // );
+    await sendDisappearingMessage(
+      ctx,
+      // @ts-ignore
+      `[SUCCESS]: Group "${chat.title}" was successfully added to "${folderName}"`
+    );
   } catch (err) {
     errorHandler(ctx, err);
   }
