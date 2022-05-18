@@ -9,10 +9,7 @@ export const errorHandler = (ctx: Context<Update>, e: unknown): void => {
   } else if (e instanceof Error) {
     const message = e.message;
     if (message.includes("E11000")) {
-      sendDisappearingMessage(
-        ctx,
-        `[ERROR]: This group already exists in the database.`
-      );
+      sendDisappearingMessage(ctx, `[ERROR]: Data duplication error.`);
       return;
     }
     if (message.includes(`INVALID SCHEDULE`)) {
