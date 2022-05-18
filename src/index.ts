@@ -113,7 +113,7 @@ bot.command("/test", async (ctx) => {
 bot.action(/\btest-action\b/g, async (ctx) => {
   try {
     ctx.answerCbQuery();
-    console.log(JSON.stringify(ctx));
+    console.log(ctx);
 
     // @ts-ignore
     const callbackData = ctx.callbackQuery.data;
