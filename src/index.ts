@@ -70,6 +70,62 @@ bot.command(COMMANDS.renameFolder, renameFolderCommand);
 bot.command(COMMANDS.deleteFolder, deleteFolderCommand);
 bot.action(/\bdelete-folder-action\b/g, deleteFolderAction);
 
+bot.command("/test", async (ctx) => {
+  try {
+    const folders = await findAllFolders();
+    if (folders.length < 1) {
+      await ctx.reply("[Info]: No folder found.");
+      return;
+    }
+
+    type Keyboard = {
+      callback_data: string;
+      text: string;
+    };
+
+    const allKeys: any[] = [];
+    let tempKeys: Keyboard[] = [];
+    folders.forEach(({ folder_name }, i) => {
+      tempKeys.push({
+        text: folder_name,
+        callback_data: `test-action ${folder_name}`,
+      });
+      if (tempKeys.length === 2 || folders.length - 1 === i) {
+        allKeys.push(tempKeys);
+        tempKeys = [];
+      }
+    });
+    if (allKeys.length > 0) {
+      allKeys.push(cancelKey);
+    }
+    await ctx.reply(`Rename:`, {
+      reply_markup: {
+        force_reply: true,
+        resize_keyboard: true,
+        one_time_keyboard: true,
+        inline_keyboard: allKeys,
+      },
+    });
+  } catch (error) {
+    errorHandler(ctx, error);
+  }
+});
+bot.action(/\btest-action\b/g, async (ctx) => {
+  try {
+    ctx.answerCbQuery();
+    console.log(JSON.stringify(ctx));
+
+    // @ts-ignore
+    const callbackData = ctx.callbackQuery.data;
+    if (!callbackData) return;
+
+    const folderName = callbackData
+      .replaceAll(`${COMMANDS.deleteFolderAction}`, "")
+      .trim();
+  } catch (err) {
+    errorHandler(ctx, err);
+  }
+});
 // Announce
 bot.command(COMMANDS.emit, emitAnnounceCommand);
 bot.command(COMMANDS.addAdminAnnounce, addAdminAnnounceCommand);
