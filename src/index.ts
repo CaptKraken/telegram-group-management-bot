@@ -4,9 +4,9 @@ import axios from "axios";
 import dotenv from "dotenv";
 import express, { Request, Response } from "express";
 import bodyParser from "body-parser";
-import { COMMANDS, setupWeightRegex } from "./utils";
+import { cancelKey, COMMANDS, setupWeightRegex } from "./utils";
 
-import { initCronJobs } from "./services";
+import { findAllFolders, initCronJobs } from "./services";
 import {
   addGroupBroadcastCommand,
   createFolderCommand,
@@ -72,30 +72,55 @@ bot.action(/\bremove-group-broadcast-action\b/g, removeGroupBroadcastAction);
 bot.action(/\bgo-back-broadcast-action\b/g, goBackBroadcastAction);
 bot.action(/\bcancel\b/g, cancelAction);
 
-bot.command("test", async (ctx) => {
-  ctx.reply(ctx.message.text.replace("/test ", ""), {
+bot.command(COMMANDS.emit, async (ctx) => {
+  const message = ctx.message.text
+    .replace(`/${COMMANDS.emit} `, "")
+    .replace(`/${COMMANDS.emit}\n`, "")
+    .trim();
+
+  const folders = await findAllFolders();
+  if (folders.length < 1) {
+    await ctx.reply("[Info]: No folder found.");
+    return;
+  }
+
+  type Keyboard = {
+    callback_data: string;
+    text: string;
+  };
+
+  const allKeys: any[] = [];
+  let tempKeys: Keyboard[] = [];
+  folders.forEach(({ folder_name, groups }, i) => {
+    tempKeys.push({
+      text: `${folder_name} (${groups.length})`,
+      callback_data: `${COMMANDS.emit} -f${folder_name} -m${message}`,
+    });
+    if (tempKeys.length === 2 || folders.length - 1 === i) {
+      allKeys.push(tempKeys);
+      tempKeys = [];
+    }
+  });
+  if (allKeys.length > 0) {
+    allKeys.push(cancelKey);
+  }
+  await ctx.reply(`Select folder:`, {
     reply_markup: {
-      force_reply: true,
-      one_time_keyboard: true,
       resize_keyboard: true,
-      inline_keyboard: [
-        [
-          { text: "folder 1", callback_data: "group 1" },
-          { text: "folder 2", callback_data: "group 2" },
-        ],
-      ],
+      one_time_keyboard: true,
+      inline_keyboard: allKeys,
     },
   });
 });
-bot.action(/\bgroup\b/g, async (ctx) => {
+bot.action(/\bemit\b/g, async (ctx) => {
   ctx.answerCbQuery();
   ctx.deleteMessage();
-  console.log(ctx.update);
 
-  console.log(ctx);
   // @ts-ignore
   const callbackData = ctx.callbackQuery.data;
   if (!callbackData) return;
+
+  console.log(callbackData);
 });
 
 //#region STARTING THE SERVER
