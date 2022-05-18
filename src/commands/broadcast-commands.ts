@@ -32,7 +32,7 @@ export const emitBroadcastCommand = async (ctx: Context<Update>) => {
   const allKeys: any[] = [];
   let tempKeys: Keyboard[] = [];
   folders.forEach(({ folder_name, groups }, i) => {
-    if (groups.length > 1) {
+    if (groups.length > 0) {
       tempKeys.push({
         text: `${folder_name} (${groups.length})`,
         callback_data: `${COMMANDS.emit} -f${folder_name} -m${message}`,
