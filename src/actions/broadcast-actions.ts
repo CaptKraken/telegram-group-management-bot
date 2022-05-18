@@ -78,7 +78,7 @@ export const showRemoveGroupBroadcastAction = async (ctx: Context<Update>) => {
     console.log(callbackData);
 
     const folderName = callbackData
-      .replaceAll(`${COMMANDS.removeGroupBroadcastAction}`, "")
+      .replaceAll(`${COMMANDS.showRemoveGroupBroadcastAction}`, "")
       .trim();
 
     const folderData = await findOneFolder({ folder_name: `${folderName}` });
