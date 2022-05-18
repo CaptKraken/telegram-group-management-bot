@@ -38,7 +38,7 @@ import {
   RenameFolderDTO,
 } from "./services/broadcast";
 import { ObjectId } from "mongodb";
-import { isGroup } from "utils/guards";
+import { isGroup } from "./utils/guards";
 dotenv.config();
 
 const { BOT_TOKEN, SERVER_URL } = process.env;
