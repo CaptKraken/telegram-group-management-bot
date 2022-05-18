@@ -75,6 +75,8 @@ export const showRemoveGroupBroadcastAction = async (ctx: Context<Update>) => {
     const callbackData = ctx.callbackQuery.data;
     if (!callbackData) return;
 
+    console.log(callbackData);
+
     const folderName = callbackData
       .replaceAll(`${COMMANDS.removeGroupBroadcastAction}`, "")
       .trim();
