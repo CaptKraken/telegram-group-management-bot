@@ -7,6 +7,7 @@ import {
   BroadcastGroup,
   findOneFolder,
   addGroupBroadcast,
+  removeGroupBroadcast,
 } from "../services";
 import {
   cancelKey,
@@ -104,11 +105,11 @@ export const showRemoveGroupBroadcastAction = async (ctx: Context<Update>) => {
         tempKeys = [];
       }
     });
-    if (allKeys.length > 0) {
-      allKeys.push(goBackBroadcastKey);
-      allKeys.push(cancelKey);
-    }
-    await ctx.reply(`Select group:`, {
+
+    allKeys.push(goBackBroadcastKey);
+    allKeys.push(cancelKey);
+
+    await ctx.reply(groups.length > 0 ? "Select group:" : "Group empty.", {
       reply_markup: {
         resize_keyboard: true,
         one_time_keyboard: true,
@@ -120,8 +121,58 @@ export const showRemoveGroupBroadcastAction = async (ctx: Context<Update>) => {
   }
 };
 
+export const removeGroupBroadcastAction = async (ctx: Context<Update>) => {
+  try {
+    ctx.answerCbQuery();
+    ctx.deleteMessage();
+
+    // @ts-ignore
+    const callbackData = ctx.callbackQuery.data;
+    if (!callbackData) return;
+
+    const parts = callbackData
+      .replaceAll(`${COMMANDS.removeGroupBroadcastAction}`, "")
+      .split(" -")
+      .filter((part) => part);
+
+    const payload = {
+      folder_name: "",
+      group_id: 0,
+    };
+
+    parts.forEach((part) => {
+      if (part.startsWith("f")) {
+        payload.folder_name = part.substring(1);
+      }
+      if (part.startsWith("g")) {
+        payload.group_id = Number(part.substring(1));
+      }
+    });
+
+    if (!payload.folder_name || !payload.group_id) {
+      throw new Error(`Error decoding remove group broadcast action.`);
+    }
+
+    await removeGroupBroadcast(
+      { folder_name: payload.folder_name },
+      payload.group_id
+    );
+    await sendDisappearingMessage(
+      ctx,
+      `[Success]: Group removed from "${payload.folder_name}"`
+    );
+  } catch (error) {
+    errorHandler(ctx, error);
+  }
+};
+
 export const goBackBroadcastAction = async (ctx: Context<Update>) => {
   await ctx.answerCbQuery();
   await ctx.deleteMessage();
   await removeGroupBroadcastCommand(ctx);
+};
+
+export const cancelAction = async (ctx: Context<Update>) => {
+  ctx.answerCbQuery();
+  ctx.deleteMessage();
 };

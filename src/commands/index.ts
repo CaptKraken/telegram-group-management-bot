@@ -12,14 +12,6 @@ export {
 } from "./weight-counter-commands";
 
 export {
-  emitAnnounceCommand,
-  addAdminAnnounceCommand,
-  removeAdminAnnounceCommand,
-  addGroupAnnounceCommand,
-  removeGroupAnnounceCommand,
-} from "./announce-commands";
-
-export {
   createFolderCommand,
   renameFolderCommand,
   deleteFolderCommand,

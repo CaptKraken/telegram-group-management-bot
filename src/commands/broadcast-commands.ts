@@ -1,6 +1,7 @@
 import {
   createFolder,
   findAllFolders,
+  isBroadcastAdmin,
   renameFolder,
   sendDisappearingMessage,
 } from "../services";
@@ -9,6 +10,28 @@ import { Update } from "typegram";
 import { cancelKey, COMMANDS, errorHandler } from "../utils";
 import { RenameFolderDTO } from "services/broadcast";
 import { isGroup } from "../utils/guards";
+
+export const emitBroadcastCommand = async (ctx: Context<Update>) => {
+  const isAdmin = await isBroadcastAdmin(Number(ctx.from?.id));
+  if (!isAdmin) return;
+
+  // @ts-ignore
+  const msg = ctx.message.text
+    .replace(`/${COMMANDS.emit} `, "")
+    .replace(`/${COMMANDS.emit}\n`, "")
+    .trim();
+
+  if (!msg) return;
+  const data = await findAllFolders();
+  // @ts-ignore
+  const groups = data.groups;
+  groups.forEach((group: { group_id: string | number }, i: number) => {
+    ctx.telegram.sendMessage(group.group_id, msg);
+    if (groups.length - 1 === i) {
+      ctx.reply(`[Success]: emission completed.`);
+    }
+  });
+};
 
 export const createFolderCommand = async (ctx: Context<Update>) => {
   try {
@@ -168,9 +191,9 @@ export const removeGroupBroadcastCommand = async (ctx: Context<Update>) => {
 
     const allKeys: any[] = [];
     let tempKeys: Keyboard[] = [];
-    folders.forEach(({ folder_name }, i) => {
+    folders.forEach(({ folder_name, groups }, i) => {
       tempKeys.push({
-        text: folder_name,
+        text: `${folder_name} (${groups.length})`,
         callback_data: `${COMMANDS.showRemoveGroupBroadcastAction} ${folder_name}`,
       });
       if (tempKeys.length === 2 || folders.length - 1 === i) {

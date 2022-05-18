@@ -32,16 +32,6 @@ export {
 } from "./cron-jobs";
 
 export {
-  addAdminAnnouncement,
-  addGroupAnnouncement,
-  removeAdminAnnouncement,
-  removeGroupAnnouncement,
-  findGroup,
-  fetchAnnouncements,
-  isSenderAdminAnnounce,
-} from "./announce";
-
-export {
   BroadcastFolder,
   BroadcastGroup,
   findOneFolder,
@@ -52,3 +42,5 @@ export {
   addGroupBroadcast,
   removeGroupBroadcast,
 } from "./broadcast";
+
+export { findAllAdmins, isBroadcastAdmin } from "./admin";

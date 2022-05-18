@@ -21,6 +21,8 @@ export const announcementCollection = dbClient
   .db("announcement-db")
   .collection("data");
 
+export const adminCollection = dbClient.db("admin-db").collection("data");
+
 type DBSchema = {
   _id: ObjectId;
   chat_id: number;

@@ -2,25 +2,16 @@ import { Context, Telegraf } from "telegraf";
 import { Update } from "typegram";
 import axios from "axios";
 import dotenv from "dotenv";
-import {
-  cancelKey,
-  COMMANDS,
-  errorHandler,
-  goBackBroadcastKey,
-  setupWeightRegex,
-} from "./utils";
 import express, { Request, Response } from "express";
 import bodyParser from "body-parser";
+import { COMMANDS, setupWeightRegex } from "./utils";
+
+import { initCronJobs } from "./services";
 import {
-  addAdminAnnounceCommand,
-  addGroupAnnounceCommand,
   addGroupBroadcastCommand,
   createFolderCommand,
   deleteFolderCommand,
-  emitAnnounceCommand,
-  removeAdminAnnounceCommand,
   removeAdminCommand,
-  removeGroupAnnounceCommand,
   removeGroupBroadcastCommand,
   removeWeightCommand,
   renameFolderCommand,
@@ -30,32 +21,16 @@ import {
   setScheduleCommand,
   setupWeightCommand,
 } from "./commands";
-import { initCronJobs, sendDisappearingMessage } from "./services";
 import {
   addGroupBroadcastAction,
-  cancelAnnounceAction,
+  cancelAction,
   deleteFolderAction,
   goBackBroadcastAction,
-  removeAdminAnnounceAction,
-  removeGroupAnnounceAction,
+  removeGroupBroadcastAction,
   showRemoveGroupBroadcastAction,
 } from "./actions";
-import {
-  addGroupBroadcast,
-  BroadcastFolder,
-  BroadcastGroup,
-  createFolder,
-  deleteFolder,
-  findAllFolders,
-  findOneFolder,
-  removeGroupBroadcast,
-  renameFolder,
-  RenameFolderDTO,
-} from "./services/broadcast";
-import { ObjectId } from "mongodb";
-import { isGroup } from "./utils/guards";
-dotenv.config();
 
+dotenv.config();
 const { BOT_TOKEN, SERVER_URL } = process.env;
 
 const bot: Telegraf<Context<Update>> = new Telegraf(BOT_TOKEN as string);
@@ -89,68 +64,38 @@ bot.action(/\bdelete-folder-action\b/g, deleteFolderAction);
 bot.command(COMMANDS.addGroupBroadcast, addGroupBroadcastCommand);
 bot.action(/\badd-group-broadcast-action\b/g, addGroupBroadcastAction);
 bot.command(COMMANDS.removeGroupBroadcast, removeGroupBroadcastCommand);
-
 bot.action(
   /\bshow-remove-group-broadcast-action\b/g,
   showRemoveGroupBroadcastAction
 );
-
-bot.action(/\bremove-group-broadcast-action\b/g, async (ctx) => {
-  try {
-    ctx.answerCbQuery();
-    ctx.deleteMessage();
-
-    // @ts-ignore
-    const callbackData = ctx.callbackQuery.data;
-    if (!callbackData) return;
-
-    const parts = callbackData
-      .replaceAll(`${COMMANDS.removeGroupBroadcastAction}`, "")
-      .split(" -")
-      .filter((part) => part);
-
-    const payload = {
-      folder_name: "",
-      group_id: 0,
-    };
-
-    parts.forEach((part) => {
-      if (part.startsWith("f")) {
-        payload.folder_name = part.substring(1);
-      }
-      if (part.startsWith("g")) {
-        payload.group_id = Number(part.substring(1));
-      }
-    });
-
-    if (!payload.folder_name || !payload.group_id) {
-      throw new Error(`Error decoding remove group broadcast action.`);
-    }
-
-    await removeGroupBroadcast(
-      { folder_name: payload.folder_name },
-      payload.group_id
-    );
-    await sendDisappearingMessage(
-      ctx,
-      `[Success]: Group removed from "${payload.folder_name}"`
-    );
-  } catch (error) {
-    errorHandler(ctx, error);
-  }
-});
-
+bot.action(/\bremove-group-broadcast-action\b/g, removeGroupBroadcastAction);
 bot.action(/\bgo-back-broadcast-action\b/g, goBackBroadcastAction);
+bot.action(/\bcancel\b/g, cancelAction);
 
-// Announce
-bot.command(COMMANDS.emit, emitAnnounceCommand);
-bot.command(COMMANDS.addAdminAnnounce, addAdminAnnounceCommand);
-bot.command(COMMANDS.removeAdminAnnounce, removeAdminAnnounceCommand);
-bot.action(/\bremove-admin-action\b -?[1-9]{0,}/g, removeAdminAnnounceAction);
-bot.command(COMMANDS.addGroupAnnounce, addGroupAnnounceCommand);
-bot.command(COMMANDS.removeGroupAnnounce, removeGroupAnnounceCommand);
-bot.action(/\bremove-group-action\b -?[1-9]{0,}/g, removeGroupAnnounceAction);
-bot.action(/\bcancel\b/g, cancelAnnounceAction);
+bot.command("test", async (ctx) => {
+  ctx.reply(ctx.message.text.replace("/test ", ""), {
+    reply_markup: {
+      force_reply: true,
+      one_time_keyboard: true,
+      resize_keyboard: true,
+      inline_keyboard: [
+        [
+          { text: "folder 1", callback_data: "group 1" },
+          { text: "folder 2", callback_data: "group 2" },
+        ],
+      ],
+    },
+  });
+});
+bot.action(/\bgroup\b/g, async (ctx) => {
+  ctx.answerCbQuery();
+  ctx.deleteMessage();
+
+  console.log(ctx);
+  // @ts-ignore
+  const callbackData = ctx.callbackQuery.data;
+  if (!callbackData) return;
+});
 
 //#region STARTING THE SERVER
 setInterval(() => {
