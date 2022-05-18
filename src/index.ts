@@ -209,9 +209,9 @@ bot.action(/\bremove-group-broadcast-action\b/g, async (ctx) => {
 });
 
 bot.action(/\bgo-back-broadcast-action\b/g, async (ctx) => {
-  ctx.answerCbQuery();
-  ctx.deleteMessage();
-  removeGroupBroadcastCommand(ctx);
+  await ctx.answerCbQuery();
+  await ctx.deleteMessage();
+  await removeGroupBroadcastCommand(ctx);
 });
 
 // Announce
