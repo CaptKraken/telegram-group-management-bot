@@ -164,7 +164,7 @@ bot.action(/\bremove-group-broadcast-action\b/g, async (ctx) => {
     if (!callbackData) return;
 
     const folderName = callbackData
-      .replaceAll(`${COMMANDS.addGroupBroadcastAction}`, "")
+      .replaceAll(`${COMMANDS.removeGroupBroadcastAction}`, "")
       .trim();
 
     const folderData = await findOneFolder({ folder_name: `${folderName}` });
