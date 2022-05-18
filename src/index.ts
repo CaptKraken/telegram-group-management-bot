@@ -73,6 +73,9 @@ bot.command(COMMANDS.deleteFolder, deleteFolderCommand);
 bot.action(/\bdelete-folder-action\b/g, deleteFolderAction);
 bot.command(COMMANDS.addGroupBroadcast, async (ctx) => {
   try {
+    if (!isGroup(ctx)) {
+      throw new Error(`Only available for group.`);
+    }
     const folders = await findAllFolders();
     if (folders.length < 1) {
       await ctx.reply("[Info]: No folders found.");
@@ -114,12 +117,6 @@ bot.action(/\badd-group-broadcast-action\b/g, async (ctx) => {
   try {
     ctx.answerCbQuery();
     ctx.deleteMessage();
-
-    console.log("is group", isGroup(ctx));
-
-    if (!isGroup(ctx)) {
-      throw new Error(`Only available for group.`);
-    }
 
     // @ts-ignore
     const callbackData = ctx.callbackQuery.data;
