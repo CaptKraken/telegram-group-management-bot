@@ -49,7 +49,7 @@ export const createFolder = async (folder_name: string) => {
     if (error instanceof Error) {
       if (error.message.includes("E11000")) {
         throw new Error(
-          `Folder ${folder_name} already exists. Please try again with a different name.`
+          `Folder "${folder_name}" already exists. Please try again with a different name.`
         );
       }
     }
@@ -112,7 +112,7 @@ export const addGroupBroadcast = async (
 
     await dbClient.connect();
     await announcementCollection.updateOne(condition, {
-      $push: {
+      $addToSet: {
         groups: {
           group_id,
           group_name,
