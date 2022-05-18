@@ -90,6 +90,7 @@ bot.command("test", async (ctx) => {
 bot.action(/\bgroup\b/g, async (ctx) => {
   ctx.answerCbQuery();
   ctx.deleteMessage();
+  console.log(ctx.update);
 
   console.log(ctx);
   // @ts-ignore
