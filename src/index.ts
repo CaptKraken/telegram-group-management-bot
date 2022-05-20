@@ -87,6 +87,18 @@ bot.action(/\bemit\b/g, emitBroadcastAction);
 
 bot.on("photo", async (ctx) => {
   console.log(ctx);
+  ctx.replyWithMediaGroup([
+    {
+      type: "photo",
+      media:
+        "AgACAgUAAxkBAAIGB2KHGD1Elz2Vkzt3O9Xfp9JcDAhaAAJSsDEbDZc5VGsf9qNCm8BRAQADAgADeQADJAQ",
+    },
+    {
+      type: "photo",
+      media:
+        "AgACAgUAAxkBAAIGB2KHGD1Elz2Vkzt3O9Xfp9JcDAhaAAJSsDEbDZc5VGsf9qNCm8BRAQADAgADeQADJAQ",
+    },
+  ]);
 });
 
 //#region STARTING THE SERVER
@@ -112,8 +124,6 @@ expressApp.post(`/bot${BOT_TOKEN}`, (req: Request, res: Response) => {
 });
 
 expressApp.listen(process.env.PORT || 3000, async () => {
-  console.log(await bot.telegram.getWebhookInfo());
-
   console.log(`[INFO]: App running on port ${process.env.PORT}`);
   console.log(`************* INIT BOT *************`);
   await initCronJobs();
