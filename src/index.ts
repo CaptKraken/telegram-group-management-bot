@@ -76,6 +76,8 @@ bot.command(COMMANDS.emit, emitBroadcastCommand);
 bot.action(/\bemit\b/g, emitBroadcastAction);
 
 bot.command("test", async (ctx) => {
+  console.log(ctx.message);
+
   ctx.forwardMessage(-643478967, {
     disable_notification: true,
   });
