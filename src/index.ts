@@ -86,7 +86,9 @@ bot.on("photo", async (ctx) => {
 bot.hears("/test", async (ctx) => {
   console.log("YES");
 });
-
+bot.hashtag("bruh", async (ctx) => {
+  console.log(ctx.message);
+});
 // bot.command("test", async (ctx) => {
 //   console.log(ctx.message);
 
