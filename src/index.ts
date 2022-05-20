@@ -87,8 +87,8 @@ bot.action(/\bemit\b/g, emitBroadcastAction);
 
 bot.on("photo", async (ctx) => {
   console.log(ctx);
-
-  if (!(await isBroadcastAdmin(ctx.from.id))) return;
+  const isAdmin = await isBroadcastAdmin(ctx.from.id);
+  if (!isAdmin) return;
 
   ctx.replyWithMediaGroup([
     {
