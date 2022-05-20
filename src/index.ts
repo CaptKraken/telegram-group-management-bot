@@ -75,20 +75,20 @@ bot.action(/\bcancel\b/g, cancelAction);
 bot.command(COMMANDS.emit, emitBroadcastCommand);
 bot.action(/\bemit\b/g, emitBroadcastAction);
 
-bot.on("photo", async (ctx) => {
-  console.log(ctx.message);
+// bot.on("photo", async (ctx) => {
+//   console.log(ctx.message);
 
-  ctx.forwardMessage(-643478967, {
-    disable_notification: true,
-  });
-});
+//   ctx.forwardMessage(-643478967, {
+//     disable_notification: true,
+//   });
+// });
 
-bot.hears("/test", async (ctx) => {
-  console.log("YES");
-});
-bot.hashtag("bruh", async (ctx) => {
-  console.log(ctx.message);
-});
+// bot.hears("/test", async (ctx) => {
+//   console.log("YES");
+// });
+// bot.hashtag("bruh", async (ctx) => {
+//   console.log(ctx.message);
+// });
 // bot.command("test", async (ctx) => {
 //   console.log(ctx.message);
 
