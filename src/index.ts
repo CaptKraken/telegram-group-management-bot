@@ -75,6 +75,12 @@ bot.action(/\bcancel\b/g, cancelAction);
 bot.command(COMMANDS.emit, emitBroadcastCommand);
 bot.action(/\bemit\b/g, emitBroadcastAction);
 
+bot.command("test", async (ctx) => {
+  ctx.forwardMessage(-643478967, {
+    disable_notification: true,
+  });
+});
+
 //#region STARTING THE SERVER
 setInterval(() => {
   try {
