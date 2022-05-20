@@ -85,11 +85,26 @@ bot.action(/\bemit\b/g, emitBroadcastAction);
 //   console.log(ctx.message);
 // });
 
-bot.on("forward_date", async (ctx) => {
+bot.command("test", async (ctx) => {
   console.log(ctx.message);
-
-  // ctx.forwardMessage(-643478967);
 });
+
+// bot.on("forward_date", async (ctx) => {
+//   const message = ctx.message;
+//   // @ts-ignore
+//   const photos= message.photo;
+//   const isPhotoGroup = photos && photos.length > 1;
+
+//   if(isPhotoGroup){
+//     ctx.telegram.sendMediaGroup(-643478967, [
+//       {
+//         type: 'photo',
+//         media:
+//       }
+//     ]);
+//   }
+//   // ctx.forwardMessage(-643478967);
+// });
 
 // bot.on("photo", async (ctx) => {
 //   console.log(ctx);
