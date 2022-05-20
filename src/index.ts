@@ -114,7 +114,7 @@ expressApp.get("/", (req: Request, res: Response) => {
 });
 
 expressApp.listen(process.env.PORT || 3000, async () => {
-  console.log(bot.telegram.getWebhookInfo());
+  console.log(await bot.telegram.getWebhookInfo());
 
   console.log(`[INFO]: App running on port ${process.env.PORT}`);
   console.log(`************* INIT BOT *************`);
