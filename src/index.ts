@@ -88,6 +88,8 @@ bot.action(/\bemit\b/g, emitBroadcastAction);
 bot.command("test", async (ctx) => {
   const replyMessage = ctx.message.reply_to_message;
   if (!replyMessage) return;
+  console.log(replyMessage);
+
   const replyId = Number(replyMessage?.message_id);
   const replyGroupId = Number(replyMessage?.chat.id);
   if (!replyId || !replyGroupId) return;
