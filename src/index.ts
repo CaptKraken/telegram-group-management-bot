@@ -75,27 +75,14 @@ bot.action(/\bcancel\b/g, cancelAction);
 bot.command(COMMANDS.emit, emitBroadcastCommand);
 bot.action(/\bemit\b/g, emitBroadcastAction);
 
-// bot.on("photo", async (ctx) => {
-//   console.log(ctx.message);
+bot.on("forward_date", async (ctx) => {
+  console.log("FORWARD DATE");
+});
 
-//   ctx.forwardMessage(-643478967, {
-//     disable_notification: true,
-//   });
-// });
+bot.on("message", async (ctx) => {
+  console.log("ON MESSAGE");
+});
 
-// bot.hears("/test", async (ctx) => {
-//   console.log("YES");
-// });
-// bot.hashtag("bruh", async (ctx) => {
-//   console.log(ctx.message);
-// });
-// bot.command("test", async (ctx) => {
-//   console.log(ctx.message);
-
-//   ctx.forwardMessage(-643478967, {
-//     disable_notification: true,
-//   });
-// });
 //#region STARTING THE SERVER
 setInterval(() => {
   try {
