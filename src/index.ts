@@ -87,6 +87,7 @@ bot.action(/\bemit\b/g, emitBroadcastAction);
 
 bot.command("test", async (ctx) => {
   console.log(ctx.message);
+  ctx.telegram.forwardMessage(-643478967, -643478967, 1570);
 });
 
 // bot.on("forward_date", async (ctx) => {
