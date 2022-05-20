@@ -113,6 +113,13 @@ expressApp.get("/", (req: Request, res: Response) => {
   res.json({ alive: true });
 });
 
+expressApp.post(
+  "/bot5390505151:AAEL84rcoXqW0gqYkCRVkB0b4xHigQFPZc0",
+  (req: Request, res: Response) => {
+    console.log("hey");
+  }
+);
+
 expressApp.listen(process.env.PORT || 3000, async () => {
   console.log(await bot.telegram.getWebhookInfo());
 
