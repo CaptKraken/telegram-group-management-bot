@@ -96,6 +96,10 @@ bot.command("test", async (ctx) => {
   ctx.telegram.forwardMessage(-643478967, replyGroupId, replyId);
 });
 
+bot.on("photo", async (ctx) => {
+  console.log(ctx.message);
+});
+
 // bot.on("forward_date", async (ctx) => {
 //   const message = ctx.message;
 //   // @ts-ignore
