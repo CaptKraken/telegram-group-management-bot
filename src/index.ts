@@ -86,7 +86,9 @@ bot.action(/\bemit\b/g, emitBroadcastAction);
 // });
 
 bot.on("forward_date", async (ctx) => {
-  ctx.forwardMessage(-643478967);
+  console.log(ctx.message);
+
+  // ctx.forwardMessage(-643478967);
 });
 
 // bot.on("photo", async (ctx) => {
