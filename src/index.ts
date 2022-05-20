@@ -6,7 +6,7 @@ import express, { Request, Response } from "express";
 import bodyParser from "body-parser";
 import { COMMANDS, setupWeightRegex } from "./utils";
 
-import { initCronJobs } from "./services";
+import { initCronJobs, isBroadcastAdmin } from "./services";
 import {
   addGroupBroadcastCommand,
   createFolderCommand,
@@ -87,6 +87,9 @@ bot.action(/\bemit\b/g, emitBroadcastAction);
 
 bot.on("photo", async (ctx) => {
   console.log(ctx);
+
+  if (!(await isBroadcastAdmin(ctx.from.id))) return;
+
   ctx.replyWithMediaGroup([
     {
       type: "photo",
