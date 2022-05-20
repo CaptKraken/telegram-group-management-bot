@@ -77,10 +77,12 @@ bot.action(/\bemit\b/g, emitBroadcastAction);
 
 bot.on("forward_date", async (ctx) => {
   console.log("FORWARD DATE");
+  console.log(ctx.message);
 });
 
 bot.on("message", async (ctx) => {
   console.log("ON MESSAGE");
+  console.log(ctx.message);
 });
 
 //#region STARTING THE SERVER
