@@ -85,26 +85,30 @@ bot.action(/\bemit\b/g, emitBroadcastAction);
 //   console.log(ctx.message);
 // });
 
-bot.on("photo", async (ctx) => {
-  console.log(ctx);
-  const isAdmin = await isBroadcastAdmin(ctx.from.id);
-  console.log(isAdmin, ctx.from.id);
-
-  if (!isAdmin) return;
-
-  ctx.replyWithMediaGroup([
-    {
-      type: "photo",
-      media:
-        "AgACAgUAAxkBAAIGB2KHGD1Elz2Vkzt3O9Xfp9JcDAhaAAJSsDEbDZc5VGsf9qNCm8BRAQADAgADeQADJAQ",
-    },
-    {
-      type: "photo",
-      media:
-        "AgACAgUAAxkBAAIGB2KHGD1Elz2Vkzt3O9Xfp9JcDAhaAAJSsDEbDZc5VGsf9qNCm8BRAQADAgADeQADJAQ",
-    },
-  ]);
+bot.on("forward_date", async (ctx) => {
+  ctx.forwardMessage(-643478967);
 });
+
+// bot.on("photo", async (ctx) => {
+//   console.log(ctx);
+//   const isAdmin = await isBroadcastAdmin(ctx.from.id);
+//   console.log(isAdmin, ctx.from.id);
+
+//   if (!isAdmin) return;
+
+//   ctx.replyWithMediaGroup([
+//     {
+//       type: "photo",
+//       media:
+//         "AgACAgUAAxkBAAIGB2KHGD1Elz2Vkzt3O9Xfp9JcDAhaAAJSsDEbDZc5VGsf9qNCm8BRAQADAgADeQADJAQ",
+//     },
+//     {
+//       type: "photo",
+//       media:
+//         "AgACAgUAAxkBAAIGB2KHGD1Elz2Vkzt3O9Xfp9JcDAhaAAJSsDEbDZc5VGsf9qNCm8BRAQADAgADeQADJAQ",
+//     },
+//   ]);
+// });
 
 //#region STARTING THE SERVER
 setInterval(() => {
