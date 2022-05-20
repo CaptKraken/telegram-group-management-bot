@@ -15,6 +15,8 @@ export const isBroadcastAdmin = async (userId: number) => {
   try {
     const admins = await findAllAdmins();
     admins.forEach((admin) => {
+      console.log(admin.admin_id, userId);
+
       if (admin.admin_id === userId) {
         return true;
       }
