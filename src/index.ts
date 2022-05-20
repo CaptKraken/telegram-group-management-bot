@@ -83,13 +83,17 @@ bot.on("photo", async (ctx) => {
   });
 });
 
-bot.command("test", async (ctx) => {
-  console.log(ctx.message);
-
-  ctx.forwardMessage(-643478967, {
-    disable_notification: true,
-  });
+bot.hears("/test", async (ctx) => {
+  console.log("YES");
 });
+
+// bot.command("test", async (ctx) => {
+//   console.log(ctx.message);
+
+//   ctx.forwardMessage(-643478967, {
+//     disable_notification: true,
+//   });
+// });
 
 //#region STARTING THE SERVER
 setInterval(() => {
