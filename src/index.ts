@@ -86,8 +86,12 @@ bot.action(/\bemit\b/g, emitBroadcastAction);
 // });
 
 bot.command("test", async (ctx) => {
-  console.log(ctx.message);
-  ctx.telegram.forwardMessage(-643478967, -643478967, 1570);
+  const replyMessage = ctx.message.reply_to_message;
+  if (!replyMessage) return;
+  const replyId = Number(replyMessage?.message_id);
+  const replyGroupId = Number(replyMessage?.chat.id);
+  if (!replyId || !replyGroupId) return;
+  ctx.telegram.forwardMessage(-643478967, replyGroupId, replyId);
 });
 
 // bot.on("forward_date", async (ctx) => {
