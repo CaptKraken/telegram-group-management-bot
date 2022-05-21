@@ -114,6 +114,7 @@ export const increaseReportCount = async (increaseBy: number = 1) => {
  */
 export const removeReader = async (readerName: string) => {
   try {
+    await dbClient.connect();
     await readCountCollection.updateOne(
       { _id: readCountDocId },
       {
@@ -122,6 +123,7 @@ export const removeReader = async (readerName: string) => {
         },
       }
     );
+    await dbClient.close();
   } catch (err) {
     throw new Error(
       `function: removeReader\nreaderName: ${readerName}\nerror: ${err}`
