@@ -108,7 +108,7 @@ const increaseReportCount = async (increaseBy: number = 1) => {
  * @param {string} readerName
  * @returns void
  */
-const removeReader = async (readerName: string) => {
+export const removeReader = async (readerName: string) => {
   try {
     await readCountCollection.updateOne(
       { _id: readCountDocId },

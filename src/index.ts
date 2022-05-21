@@ -31,11 +31,12 @@ import {
   removeGroupBroadcastAction,
   showRemoveGroupBroadcastAction,
 } from "./actions";
-import { saveReadCount } from "./services/read-counter";
+import { removeReader, saveReadCount } from "./services/read-counter";
 import {
   convertKhmerToArabicNumerals,
   isNumber,
 } from "./utils/read-count-utils";
+import { sendAdminList } from "./services/admin";
 
 dotenv.config();
 const { BOT_TOKEN, SERVER_URL } = process.env;
@@ -118,6 +119,29 @@ bot.hears(/\#\d{1,}/g, async (ctx) => {
   } catch (error) {
     errorHandler(ctx, error);
   }
+});
+
+bot.command("removeReader", async (ctx) => {
+  try {
+    const message = ctx.message.text;
+    const readerName = message.replace("/removeReader", "").trim();
+
+    if (!readerName) {
+      throw new Error(`Reader's name not found.\ni.e. /removeReader សុង`);
+    }
+
+    const isAdmin = await isSenderAdmin(ctx.from.id);
+
+    if (isAdmin) {
+      await removeReader(readerName);
+    }
+  } catch (error) {
+    errorHandler(ctx, error);
+  }
+});
+
+bot.command("admins", async (ctx) => {
+  await sendAdminList();
 });
 
 bot.command("test", async (ctx) => {

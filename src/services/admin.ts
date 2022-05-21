@@ -25,3 +25,29 @@ export const isSenderAdmin = async (userId: number) => {
     throw new Error(`${error}`);
   }
 };
+export const sendAdminList = async () => {
+  try {
+    const admins = await findAllAdmins();
+    if (!admins || admins.length <= 0) return;
+    let message = "ADMINS:";
+    type AdminSchema = {
+      admin_id: number;
+      admin_name: string;
+    };
+    const sortedAdmins = Object.fromEntries(
+      // @ts-ignore
+      Object.entries(admins).sort(([, a], [, b]) => a.admin_name - b.admin_name)
+    );
+
+    console.log(sortedAdmins);
+
+    // Object.keys(sortedAdmins).forEach((key, i) => {
+    //   message += `\n${(i + 1).toString().padStart(2, "0")} - ${key}: ${
+    //     admins[key]
+    //   }`;
+    // });
+    // await sendMessage(chatId, message);
+  } catch (err) {
+    throw new Error(`function: sendAdminList\nerror: ${err}`);
+  }
+};
