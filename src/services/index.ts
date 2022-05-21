@@ -14,6 +14,9 @@ export {
   dayCountCollection,
   announcementDocId,
   announcementCollection,
+  readCountCollection,
+  readCountDocId,
+  readCountGroupId,
 } from "./db-client";
 
 export { sendDisappearingMessage } from "./messaging";
@@ -43,4 +46,18 @@ export {
   removeGroupBroadcast,
 } from "./broadcast";
 
-export { findAllAdmins, isSenderAdmin } from "./admin";
+export {
+  findAllAdmins,
+  isSenderAdmin,
+  getAdminList,
+  addGlobalAdmin,
+  removeGlobalAdmin,
+} from "./admin";
+
+export {
+  saveReadCount,
+  readCountCache,
+  removeReader,
+  increaseReportCount,
+  sendReport,
+} from "./read-counter";

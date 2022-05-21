@@ -2,15 +2,29 @@ import cron from "node-cron";
 import { emptyNodeCronStorage } from "../utils";
 import { cache, fetchAndCache, increaseDayCount } from "./day-counter";
 import { sendMessage } from "./messaging";
-import {
-  getAllWeightData,
-  getWeightData,
-  updateWeightAndDay,
-} from "./weight-counter";
+import { increaseReportCount, sendReport } from "./read-counter";
+import { getAllWeightData, updateWeightAndDay } from "./weight-counter";
 
 const createCronJobs = async () => {
   // empty cronJobs array
   emptyNodeCronStorage();
+
+  // cron job to send report to the group everyday at 7 am
+  cron.schedule(
+    "00 07 * * *",
+    async function () {
+      try {
+        await increaseReportCount();
+        await sendReport();
+      } catch (err) {
+        console.log(`${err}`);
+      }
+    },
+    {
+      timezone: "Asia/Phnom_Penh",
+    }
+  );
+
   const groups = await getAllWeightData();
 
   groups.forEach((group) => {

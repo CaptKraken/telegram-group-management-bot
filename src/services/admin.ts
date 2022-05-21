@@ -50,3 +50,36 @@ export const getAdminList = async () => {
     throw new Error(`function: sendAdminList\nerror: ${err}`);
   }
 };
+
+export const addGlobalAdmin = async (admin_name: string, admin_id: number) => {
+  try {
+    await dbClient.connect();
+    await adminCollection.updateOne(
+      {
+        admin_id,
+      },
+      {
+        admin_id,
+        admin_name,
+      },
+      {
+        upsert: true,
+      }
+    );
+    await dbClient.close();
+  } catch (error) {
+    throw new Error(`${error}`);
+  }
+};
+
+export const removeGlobalAdmin = async (admin_id: number) => {
+  try {
+    await dbClient.connect();
+    await adminCollection.deleteOne({
+      admin_id,
+    });
+    await dbClient.close();
+  } catch (error) {
+    throw new Error(`${error}`);
+  }
+};

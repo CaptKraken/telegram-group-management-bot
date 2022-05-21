@@ -42,6 +42,8 @@ export const getDayCountAndScheduleExpression = (message: string) => {
   return result;
 };
 
+export { convertKhmerToArabicNumerals, isNumber } from "./read-count-utils";
+
 export const decodeSetupWeightPayload = (text: string) => {
   type WeightSetup = {
     day_count?: number;

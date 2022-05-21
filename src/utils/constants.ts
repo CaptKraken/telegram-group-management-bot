@@ -23,6 +23,10 @@ export const COMMANDS = {
   removeGroupBroadcastAction: "remove-group-broadcast-action",
   showRemoveGroupBroadcastAction: "show-remove-group-broadcast-action",
   goBackBroadcastAction: "go-back-broadcast-action",
+  admins: "admins",
+  addGlobalAdmin: "addGlobalAdmin",
+  removeGlobalAdmin: "removeGlobalAdmin",
+  removeReader: "removeReader",
 };
 
 export const everydayAt5AM = "0 0 5 * * *";

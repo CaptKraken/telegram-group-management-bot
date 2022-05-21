@@ -6,21 +6,30 @@ import express, { Request, Response } from "express";
 import bodyParser from "body-parser";
 import { COMMANDS, errorHandler, setupWeightRegex } from "./utils";
 
-import { initCronJobs, isSenderAdmin } from "./services";
 import {
+  initCronJobs,
+  isSenderAdmin,
+  sendDisappearingMessage,
+} from "./services";
+import {
+  addGlobalAdminCommand,
   addGroupBroadcastCommand,
   createFolderCommand,
   deleteFolderCommand,
   emitBroadcastCommand,
   removeAdminCommand,
+  removeGlobalAdminCommand,
   removeGroupBroadcastCommand,
+  removeReaderCommand,
   removeWeightCommand,
   renameFolderCommand,
+  sendAdminListCommand,
   setAdminCommand,
   setCountCommand,
   setGroupCommand,
   setScheduleCommand,
   setupWeightCommand,
+  updateReadCountCommand,
 } from "./commands";
 import {
   addGroupBroadcastAction,
@@ -36,7 +45,11 @@ import {
   convertKhmerToArabicNumerals,
   isNumber,
 } from "./utils/read-count-utils";
-import { getAdminList } from "./services/admin";
+import {
+  addGlobalAdmin,
+  getAdminList,
+  removeGlobalAdmin,
+} from "./services/admin";
 
 dotenv.config();
 const { BOT_TOKEN, SERVER_URL } = process.env;
@@ -90,68 +103,15 @@ bot.action(/\bemit\b/g, emitBroadcastAction);
 // #endregion
 
 // #region Read Count
+bot.hears(/\#\d{1,}/g, updateReadCountCommand);
+bot.command(COMMANDS.removeReader, removeReaderCommand);
+// #endregion
 
-// TODO: CHECK FOR GROUP ID
-bot.hears(/\#\d{1,}/g, async (ctx) => {
-  try {
-    const message = ctx.message.text;
+// #region Admins
+bot.command(COMMANDS.admins, sendAdminListCommand);
+bot.command(COMMANDS.addGlobalAdmin, addGlobalAdminCommand);
+bot.command(COMMANDS.removeGlobalAdmin, removeGlobalAdminCommand);
 
-    const isAdmin = await isSenderAdmin(ctx.from.id);
-    // const isReaderGroup = ctx.chat.id === -12321;
-    const isStartsWithHashtag = message.startsWith("#");
-    // const isValid = isAdmin || (isReaderGroup && isStartsWithHashtag);
-    //
-    if (!isStartsWithHashtag) return;
-
-    const parts = message
-      .replace("\n", " ")
-      .split(" ")
-      .filter((part) => part);
-
-    const count = convertKhmerToArabicNumerals(parts[0].replace("#", ""));
-    const user = parts[1];
-    const messageId = ctx.message.message_id;
-    const hasEnoughData = isNumber(count.toString()) && user && messageId;
-
-    if (hasEnoughData) {
-      await saveReadCount(user, count, messageId);
-    }
-  } catch (error) {
-    errorHandler(ctx, error);
-  }
-});
-
-bot.command("removeReader", async (ctx) => {
-  try {
-    const message = ctx.message.text;
-    const readerName = message.replace("/removeReader", "").trim();
-
-    if (!readerName) {
-      throw new Error(`Reader's name not found.\ni.e. /removeReader សុង`);
-    }
-
-    const isAdmin = await isSenderAdmin(ctx.from.id);
-
-    if (isAdmin) {
-      await removeReader(readerName);
-    }
-  } catch (error) {
-    errorHandler(ctx, error);
-  }
-});
-
-bot.command("admins", async (ctx) => {
-  try {
-    const isAdmin = await isSenderAdmin(ctx.from.id);
-    isAdmin && ctx.reply(await getAdminList());
-  } catch (error) {
-    errorHandler(ctx, error);
-  }
-});
-
-bot.command("test", async (ctx) => {
-  console.log("test");
-});
 // #endregion
 
 //#region STARTING THE SERVER
