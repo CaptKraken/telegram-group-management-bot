@@ -34,10 +34,11 @@ export const sendAdminList = async () => {
       admin_id: number;
       admin_name: string;
     };
-    const sortedAdmins = Object.fromEntries(
-      // @ts-ignore
-      Object.entries(admins).sort(([, a], [, b]) => a.admin_name - b.admin_name)
-    );
+    const sortedAdmins = admins.sort((a, b) => {
+      if (a.admin_name > b.admin_name) return -1;
+      if (a.admin_name < b.admin_name) return 1;
+      return 0;
+    });
 
     console.log(sortedAdmins);
 

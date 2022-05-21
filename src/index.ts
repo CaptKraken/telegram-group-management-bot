@@ -97,10 +97,10 @@ bot.hears(/\#\d{1,}/g, async (ctx) => {
     const message = ctx.message.text;
 
     const isAdmin = await isSenderAdmin(ctx.from.id);
-    // const isReaderGroup = ctx.chat.id === -12321
+    // const isReaderGroup = ctx.chat.id === -12321;
     const isStartsWithHashtag = message.startsWith("#");
-    // const isValid  = (isAdmin && isReaderGroup && isStartsWithHashtag);
-
+    // const isValid = isAdmin || (isReaderGroup && isStartsWithHashtag);
+    //
     if (!isStartsWithHashtag) return;
 
     const parts = message
