@@ -84,7 +84,8 @@ bot.action(/\bemit\b/g, emitBroadcastAction);
 // #endregion
 
 // #region Read Count
-bot.hears(/\b#\b/g, async (ctx) => {
+
+bot.hears(/\#\d{0,}/g, async (ctx) => {
   console.log("hey");
 });
 bot.command("test", async (ctx) => {
