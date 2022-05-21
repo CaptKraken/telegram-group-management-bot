@@ -85,10 +85,23 @@ bot.action(/\bemit\b/g, emitBroadcastAction);
 
 // #region Read Count
 
-bot.hears(/\#\d{0,}/g, async (ctx) => {
+bot.hears(/\#\d{1,}/g, async (ctx) => {
   const message = ctx.message.text;
-  if (message.startsWith("#")) {
-    console.log(message);
+
+  const isAdmin = await isSenderAdmin(ctx.from.id);
+  // const isReaderGroup = ctx.chat.id === -12321
+  const isStartsWithHashtag = message.startsWith("#");
+  // const isValid  = (isAdmin && isReaderGroup && isStartsWithHashtag);
+
+  if (isStartsWithHashtag) {
+    const parts = message
+      .replace("\n", " ")
+      .split(" ")
+      .filter((part) => part);
+
+    const count = parts[0].replace("#", "");
+    const user = parts[1];
+    console.log(count, user);
   }
 });
 
