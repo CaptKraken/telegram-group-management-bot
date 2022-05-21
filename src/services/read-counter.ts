@@ -143,8 +143,6 @@ export const sendReport = async () => {
     const collection = await readCountCollection.findOne({
       _id: readCountDocId,
     });
-    console.log(collection);
-
     await dbClient.close();
     if (!collection) {
       throw new Error(`Can't find collection`);
@@ -160,7 +158,6 @@ export const sendReport = async () => {
       const count = countData[key].count;
       report += `\n${(i + 1).toString().padStart(2, "0")} - ${key}: ${count}`;
     });
-    console.log(report);
 
     await sendMessage(readCountGroupId, report);
   } catch (err) {
