@@ -36,7 +36,7 @@ import {
   convertKhmerToArabicNumerals,
   isNumber,
 } from "./utils/read-count-utils";
-import { sendAdminList } from "./services/admin";
+import { getAdminList } from "./services/admin";
 
 dotenv.config();
 const { BOT_TOKEN, SERVER_URL } = process.env;
@@ -141,7 +141,7 @@ bot.command("removeReader", async (ctx) => {
 });
 
 bot.command("admins", async (ctx) => {
-  await sendAdminList();
+  ctx.reply(await getAdminList());
 });
 
 bot.command("test", async (ctx) => {

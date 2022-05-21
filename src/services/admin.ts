@@ -25,10 +25,10 @@ export const isSenderAdmin = async (userId: number) => {
     throw new Error(`${error}`);
   }
 };
-export const sendAdminList = async () => {
+export const getAdminList = async () => {
   try {
     const admins = await findAllAdmins();
-    if (!admins || admins.length <= 0) return;
+    if (!admins || admins.length <= 0) return "Admin list empty.";
     let message = "ADMINS:";
     type AdminSchema = {
       admin_id: number;
@@ -40,14 +40,12 @@ export const sendAdminList = async () => {
       return 0;
     });
 
-    console.log(sortedAdmins);
-
-    // Object.keys(sortedAdmins).forEach((key, i) => {
-    //   message += `\n${(i + 1).toString().padStart(2, "0")} - ${key}: ${
-    //     admins[key]
-    //   }`;
-    // });
-    // await sendMessage(chatId, message);
+    sortedAdmins.forEach((admin, i) => {
+      message += `\n${(i + 1).toString().padStart(2, "0")} - ${
+        admin.admin_name
+      } : ${admin.admin_id}`;
+    });
+    return message;
   } catch (err) {
     throw new Error(`function: sendAdminList\nerror: ${err}`);
   }
