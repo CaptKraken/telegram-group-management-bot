@@ -73,7 +73,6 @@ export const removeReaderCommand = async (ctx: Context<Update>) => {
 export const readReportCommand = async (ctx: Context<Update>) => {
   try {
     const isAdmin = await isSenderAdmin(Number(ctx.from?.id));
-    console.log("hey", ctx.chat?.id);
 
     if (isAdmin) {
       await sendReport();

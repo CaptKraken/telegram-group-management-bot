@@ -13,7 +13,7 @@ export const readCountDocId = new ObjectId("6235400cabb33737f4a2da5a");
 export const readCountCollection = dbClient
   .db("news-read-count-db")
   .collection("data");
-export const readCountGroupId = -643478967;
+export const readCountGroupId = -1001305239528;
 
 export const dayCountCollection = dbClient
   .db("day-count-db")
