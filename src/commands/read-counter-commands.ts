@@ -11,6 +11,7 @@ import {
   removeReader,
   saveReadCount,
   sendDisappearingMessage,
+  sendReport,
 } from "../services";
 
 export const updateReadCountCommand = async (ctx: Context<Update>) => {
@@ -63,6 +64,17 @@ export const removeReaderCommand = async (ctx: Context<Update>) => {
         ctx,
         `[Success]: "${readerName}" removed from database.`
       );
+    }
+  } catch (error) {
+    errorHandler(ctx, error);
+  }
+};
+
+export const readReportCommand = async (ctx: Context<Update>) => {
+  try {
+    const isAdmin = await isSenderAdmin(Number(ctx.from?.id));
+    if (isAdmin) {
+      await sendReport();
     }
   } catch (error) {
     errorHandler(ctx, error);

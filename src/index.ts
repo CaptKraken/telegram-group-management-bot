@@ -17,6 +17,7 @@ import {
   createFolderCommand,
   deleteFolderCommand,
   emitBroadcastCommand,
+  readReportCommand,
   removeAdminCommand,
   removeGlobalAdminCommand,
   removeGroupBroadcastCommand,
@@ -40,7 +41,11 @@ import {
   removeGroupBroadcastAction,
   showRemoveGroupBroadcastAction,
 } from "./actions";
-import { removeReader, saveReadCount } from "./services/read-counter";
+import {
+  removeReader,
+  saveReadCount,
+  sendReport,
+} from "./services/read-counter";
 import {
   convertKhmerToArabicNumerals,
   isNumber,
@@ -105,6 +110,7 @@ bot.action(/\bemit\b/g, emitBroadcastAction);
 // #region Read Count
 bot.hears(/\#\d{1,}/g, updateReadCountCommand);
 bot.command(COMMANDS.removeReader, removeReaderCommand);
+bot.command(COMMANDS.readReport, readReportCommand);
 // #endregion
 
 // #region Admins

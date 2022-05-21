@@ -23,6 +23,7 @@ export {
 export {
   updateReadCountCommand,
   removeReaderCommand,
+  readReportCommand,
 } from "./read-counter-commands";
 
 export {

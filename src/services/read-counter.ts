@@ -49,6 +49,7 @@ export const saveReadCount = async (
   messageId: number
 ) => {
   try {
+    await dbClient.connect();
     await readCountCollection.updateOne(
       { _id: readCountDocId },
       [
@@ -83,6 +84,7 @@ export const saveReadCount = async (
         upsert: true,
       }
     );
+    await dbClient.close();
   } catch (err) {
     throw new Error(
       `function: saveReader\nreaderName: ${readerName}\ncount: ${count}\nmessage id: ${messageId}\nerror: ${err}`
@@ -137,9 +139,11 @@ export const removeReader = async (readerName: string) => {
  */
 export const sendReport = async () => {
   try {
+    await dbClient.connect();
     const collection = await readCountCollection.findOne({
       _id: readCountDocId,
     });
+    await dbClient.close();
     if (!collection) {
       throw new Error(`Can't find collection`);
     }
@@ -154,7 +158,6 @@ export const sendReport = async () => {
       const count = countData[key].count;
       report += `\n${(i + 1).toString().padStart(2, "0")} - ${key}: ${count}`;
     });
-
     await sendMessage(readCountGroupId, report);
   } catch (err) {
     throw new Error(`function: "sendReport"\nerror: ${err}`);
