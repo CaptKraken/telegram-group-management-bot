@@ -45,18 +45,20 @@ bot.help((ctx) => ctx.reply("Send me a sticker"));
 bot.on("sticker", (ctx) => ctx.reply("👍"));
 bot.hears("hi", (ctx) => ctx.reply("Hey there"));
 
-// Count
+// #region Count
 bot.command(COMMANDS.setGroup, setGroupCommand);
 bot.command(COMMANDS.setCount, setCountCommand);
 bot.command(COMMANDS.setAdmin, setAdminCommand);
 bot.command(COMMANDS.removeAdmin, removeAdminCommand);
 bot.command(COMMANDS.setSchedule, setScheduleCommand);
+// #endregion
 
-// Weight
+// #region Weight
 bot.hears(setupWeightRegex, setupWeightCommand);
 bot.command(COMMANDS.removeWeight, removeWeightCommand);
+// #endregion
 
-// Broadcast
+// #region Broadcast
 bot.command(COMMANDS.createFolder, createFolderCommand);
 bot.command(COMMANDS.renameFolder, renameFolderCommand);
 bot.command(COMMANDS.deleteFolder, deleteFolderCommand);
@@ -79,64 +81,11 @@ bot.action(/\bemit\b/g, emitBroadcastAction);
 //   console.log("FORWARD DATE");
 //   console.log(ctx.message);
 // });
+// #endregion
 
-// bot.on("message", async (ctx) => {
-//   console.log("ON MESSAGE");
-//   console.log(ctx.message);
-// });
+// #region Read Count
 
-bot.command("test", async (ctx) => {
-  const replyMessage = ctx.message.reply_to_message;
-  if (!replyMessage) return;
-  console.log(replyMessage);
-
-  const replyId = Number(replyMessage?.message_id);
-  const replyGroupId = Number(replyMessage?.chat.id);
-  if (!replyId || !replyGroupId) return;
-  ctx.telegram.forwardMessage(-643478967, replyGroupId, replyId);
-});
-
-bot.on("photo", async (ctx) => {
-  console.log(ctx.message);
-});
-
-// bot.on("forward_date", async (ctx) => {
-//   const message = ctx.message;
-//   // @ts-ignore
-//   const photos= message.photo;
-//   const isPhotoGroup = photos && photos.length > 1;
-
-//   if(isPhotoGroup){
-//     ctx.telegram.sendMediaGroup(-643478967, [
-//       {
-//         type: 'photo',
-//         media:
-//       }
-//     ]);
-//   }
-//   // ctx.forwardMessage(-643478967);
-// });
-
-// bot.on("photo", async (ctx) => {
-//   console.log(ctx);
-//   const isAdmin = await isBroadcastAdmin(ctx.from.id);
-//   console.log(isAdmin, ctx.from.id);
-
-//   if (!isAdmin) return;
-
-//   ctx.replyWithMediaGroup([
-//     {
-//       type: "photo",
-//       media:
-//         "AgACAgUAAxkBAAIGB2KHGD1Elz2Vkzt3O9Xfp9JcDAhaAAJSsDEbDZc5VGsf9qNCm8BRAQADAgADeQADJAQ",
-//     },
-//     {
-//       type: "photo",
-//       media:
-//         "AgACAgUAAxkBAAIGB2KHGD1Elz2Vkzt3O9Xfp9JcDAhaAAJSsDEbDZc5VGsf9qNCm8BRAQADAgADeQADJAQ",
-//     },
-//   ]);
-// });
+// #endregion
 
 //#region STARTING THE SERVER
 setInterval(() => {
