@@ -86,8 +86,12 @@ bot.action(/\bemit\b/g, emitBroadcastAction);
 // #region Read Count
 
 bot.hears(/\#\d{0,}/g, async (ctx) => {
-  console.log("hey");
+  const message = ctx.message.text;
+  if (message.startsWith("#")) {
+    console.log(message);
+  }
 });
+
 bot.command("test", async (ctx) => {
   console.log("test");
 });
