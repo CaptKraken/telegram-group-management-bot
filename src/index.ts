@@ -141,7 +141,12 @@ bot.command("removeReader", async (ctx) => {
 });
 
 bot.command("admins", async (ctx) => {
-  ctx.reply(await getAdminList());
+  try {
+    const isAdmin = await isSenderAdmin(ctx.from.id);
+    isAdmin && ctx.reply(await getAdminList());
+  } catch (error) {
+    errorHandler(ctx, error);
+  }
 });
 
 bot.command("test", async (ctx) => {
