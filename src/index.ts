@@ -4,7 +4,7 @@ import axios from "axios";
 import dotenv from "dotenv";
 import express, { Request, Response } from "express";
 import bodyParser from "body-parser";
-import { COMMANDS, setupWeightRegex } from "./utils";
+import { COMMANDS, errorHandler, setupWeightRegex } from "./utils";
 
 import { initCronJobs, isSenderAdmin } from "./services";
 import {
@@ -31,6 +31,11 @@ import {
   removeGroupBroadcastAction,
   showRemoveGroupBroadcastAction,
 } from "./actions";
+import { saveReadCount } from "./services/read-counter";
+import {
+  convertKhmerToArabicNumerals,
+  isNumber,
+} from "./utils/read-count-utils";
 
 dotenv.config();
 const { BOT_TOKEN, SERVER_URL } = process.env;
@@ -85,23 +90,33 @@ bot.action(/\bemit\b/g, emitBroadcastAction);
 
 // #region Read Count
 
+// TODO: CHECK FOR GROUP ID
 bot.hears(/\#\d{1,}/g, async (ctx) => {
-  const message = ctx.message.text;
+  try {
+    const message = ctx.message.text;
 
-  const isAdmin = await isSenderAdmin(ctx.from.id);
-  // const isReaderGroup = ctx.chat.id === -12321
-  const isStartsWithHashtag = message.startsWith("#");
-  // const isValid  = (isAdmin && isReaderGroup && isStartsWithHashtag);
+    const isAdmin = await isSenderAdmin(ctx.from.id);
+    // const isReaderGroup = ctx.chat.id === -12321
+    const isStartsWithHashtag = message.startsWith("#");
+    // const isValid  = (isAdmin && isReaderGroup && isStartsWithHashtag);
 
-  if (isStartsWithHashtag) {
+    if (!isStartsWithHashtag) return;
+
     const parts = message
       .replace("\n", " ")
       .split(" ")
       .filter((part) => part);
 
-    const count = parts[0].replace("#", "");
+    const count = convertKhmerToArabicNumerals(parts[0].replace("#", ""));
     const user = parts[1];
-    console.log(count, user);
+    const messageId = ctx.message.message_id;
+    const hasEnoughData = isNumber(count.toString()) && user && messageId;
+
+    if (hasEnoughData) {
+      await saveReadCount(user, count, messageId);
+    }
+  } catch (error) {
+    errorHandler(ctx, error);
   }
 });
 

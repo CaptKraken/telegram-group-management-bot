@@ -20,7 +20,7 @@ export type ReadCountData = {
 
 export let readCountCache: ReadCountData | undefined = undefined;
 
-const setReadCountCache = async () => {
+export const setReadCountCache = async () => {
   try {
     await dbClient.connect();
     const col = await readCountCollection.findOne({ _id: readCountDocId });
@@ -41,7 +41,7 @@ const setReadCountCache = async () => {
  * @param {number} messageId
  * @returns void
  */
-const saveReader = async (
+export const saveReadCount = async (
   readerName: string,
   count: number,
   messageId: number

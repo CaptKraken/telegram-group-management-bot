@@ -35,7 +35,7 @@ const numberMapArabicToKhmer: ArabicToKhmerMap = {
  * @param {string} value - i.e. "១២"​, "12", "១២52"
  * @returns string; formatted arabic numerals or the original value
  */
-const convertKhmerToArabicNumerals = (value: number | string) => {
+export const convertKhmerToArabicNumerals = (value: number | string) => {
   if (typeof value === "number") {
     return value;
   }
@@ -65,10 +65,5 @@ const convertKhmerToArabicNumerals = (value: number | string) => {
  * @param {string} value - i.e. "១២"​, "12", "១២52", "១z២52"
  * @returns boolean
  */
-const isNumber = (value: string) =>
+export const isNumber = (value: string) =>
   Number(convertKhmerToArabicNumerals(value)).toString() !== "NaN";
-
-module.exports = {
-  convertKhmerToArabicNumerals: convertKhmerToArabicNumerals,
-  isNumber: isNumber,
-};
