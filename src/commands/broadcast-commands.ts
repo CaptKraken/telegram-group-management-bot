@@ -1,7 +1,7 @@
 import {
   createFolder,
   findAllFolders,
-  isBroadcastAdmin,
+  isSenderAdmin,
   renameFolder,
   sendDisappearingMessage,
 } from "../services";

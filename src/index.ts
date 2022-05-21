@@ -6,7 +6,7 @@ import express, { Request, Response } from "express";
 import bodyParser from "body-parser";
 import { COMMANDS, setupWeightRegex } from "./utils";
 
-import { initCronJobs, isBroadcastAdmin } from "./services";
+import { initCronJobs, isSenderAdmin } from "./services";
 import {
   addGroupBroadcastCommand,
   createFolderCommand,
@@ -84,7 +84,12 @@ bot.action(/\bemit\b/g, emitBroadcastAction);
 // #endregion
 
 // #region Read Count
-
+bot.hears(/\b#\b/g, async (ctx) => {
+  console.log("hey");
+});
+bot.command("test", async (ctx) => {
+  console.log("test");
+});
 // #endregion
 
 //#region STARTING THE SERVER

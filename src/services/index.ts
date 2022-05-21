@@ -43,4 +43,4 @@ export {
   removeGroupBroadcast,
 } from "./broadcast";
 
-export { findAllAdmins, isBroadcastAdmin } from "./admin";
+export { findAllAdmins, isSenderAdmin } from "./admin";

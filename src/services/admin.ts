@@ -11,13 +11,11 @@ export const findAllAdmins = async () => {
   }
 };
 
-export const isBroadcastAdmin = async (userId: number) => {
+export const isSenderAdmin = async (userId: number) => {
   try {
     const admins = await findAllAdmins();
     let isAdmin = false;
     admins.forEach((admin) => {
-      console.log(admin.admin_id, userId);
-
       if (admin.admin_id === userId) {
         isAdmin = true;
       }
