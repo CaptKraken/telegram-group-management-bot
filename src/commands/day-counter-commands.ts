@@ -5,6 +5,7 @@ import { COMMANDS } from "../utils/constants";
 import {
   createGroup,
   deleteGroup,
+  isAdmin,
   isSenderAdmin,
   removeAdmin,
   sendDisappearingMessage,
@@ -63,12 +64,15 @@ export const removeGroupCommand = async (ctx: Context<Update>) => {
 
 export const setAdminCommand = async (ctx: Context<Update>) => {
   try {
-    adminGuardCache(ctx);
     // @ts-ignore
     const toBeAdminId = ctx.message?.reply_to_message?.from?.id;
-    const chatId = Number(`${ctx.chat?.id}`);
-
     if (!toBeAdminId) return;
+
+    const chatId = Number(ctx.chat?.id);
+    const senderId = Number(ctx.from?.id);
+    const isGlobalAdmin = await isSenderAdmin(senderId);
+    const isGroupAdmin = isAdmin(chatId, senderId);
+    if (!isGlobalAdmin && !isGroupAdmin) return;
 
     const isIdInvalid = isNaN(toBeAdminId);
     if (isIdInvalid) {
