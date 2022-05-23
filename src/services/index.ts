@@ -18,6 +18,7 @@ export {
   readCountCollection,
   readCountDocId,
   readCountGroupId,
+  isReadingGroup,
 } from "./db-client";
 
 export { sendDisappearingMessage } from "./messaging";

@@ -13,8 +13,8 @@ import {
   saveReadCount,
   sendDisappearingMessage,
   sendReport,
+  isReadingGroup,
 } from "../services";
-import { isReadingGroup } from "services/db-client";
 
 export const updateReadCountCommand = async (ctx: Context<Update>) => {
   try {
