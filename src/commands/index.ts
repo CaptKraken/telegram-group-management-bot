@@ -1,4 +1,4 @@
-export { sendCommands } from "./help";
+export { sendCommands } from "./help-commands";
 
 export {
   removeAdminCommand,
