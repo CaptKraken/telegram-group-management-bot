@@ -8,21 +8,27 @@ import {
 } from "../utils";
 import {
   isSenderAdmin,
+  readCountGroupId,
   removeReader,
   saveReadCount,
   sendDisappearingMessage,
   sendReport,
 } from "../services";
+import { isReadingGroup } from "services/db-client";
 
 export const updateReadCountCommand = async (ctx: Context<Update>) => {
   try {
-    const isAdmin = await isSenderAdmin(Number(ctx.from?.id));
     // @ts-ignore
-    const message = ctx.message.text;
+    const message: string = ctx.message?.text.trim();
 
-    const isReaderGroup = ctx.chat?.id === -643478967;
+    const isRightGroup = isReadingGroup(Number(ctx.chat?.id));
     const isStartsWithHashtag = message.startsWith("#");
-    const isValid = isAdmin || (isReaderGroup && isStartsWithHashtag);
+    const isValidGroupAndMessage = isRightGroup && isStartsWithHashtag;
+
+    if (!isValidGroupAndMessage) return;
+
+    const isAdmin = await isSenderAdmin(Number(ctx.from?.id));
+    const isValid = isAdmin || isValidGroupAndMessage;
 
     if (!isValid) return;
 

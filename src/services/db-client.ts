@@ -14,7 +14,7 @@ export const readCountCollection = dbClient
   .db("news-read-count-db")
   .collection("data");
 export const readCountGroupId = -1001305239528;
-
+export const isReadingGroup = (chatId: number) => chatId === readCountGroupId;
 export const dayCountCollection = dbClient
   .db("day-count-db")
   .collection("data");
