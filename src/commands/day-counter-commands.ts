@@ -40,8 +40,8 @@ export const setGroupCommand = async (ctx: Context<Update>) => {
     };
 
     await createGroup(createGroupPayload);
-    await restartCronJobs();
-    await sendDisappearingMessage(
+    restartCronJobs();
+    sendDisappearingMessage(
       ctx,
       `[BOT]: This group has been set up successfully.`
     );
@@ -54,7 +54,8 @@ export const removeGroupCommand = async (ctx: Context<Update>) => {
   try {
     if (!isGroup(ctx)) return;
     await deleteGroup(Number(ctx.chat?.id));
-    await sendDisappearingMessage(ctx, `[Success]: Group removed.`);
+    restartCronJobs();
+    sendDisappearingMessage(ctx, `[Success]: Group removed.`);
   } catch (error) {
     errorHandler(ctx, error);
   }
