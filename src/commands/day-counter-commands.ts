@@ -66,7 +66,10 @@ export const setAdminCommand = async (ctx: Context<Update>) => {
   try {
     // @ts-ignore
     const toBeAdminId = ctx.message?.reply_to_message?.from?.id;
-    if (!toBeAdminId) return;
+    const isIdInvalid = isNaN(toBeAdminId);
+    if (!toBeAdminId && isIdInvalid) {
+      throw new Error(`I couldn't get the user id.`);
+    }
 
     const chatId = Number(ctx.chat?.id);
     const senderId = Number(ctx.from?.id);
@@ -74,10 +77,6 @@ export const setAdminCommand = async (ctx: Context<Update>) => {
     const isGroupAdmin = isAdmin(chatId, senderId);
     if (!isGlobalAdmin && !isGroupAdmin) return;
 
-    const isIdInvalid = isNaN(toBeAdminId);
-    if (isIdInvalid) {
-      throw new Error(`I couldn't get the user id.`);
-    }
     await setAdmin(chatId, toBeAdminId);
     await sendDisappearingMessage(
       ctx,
@@ -90,15 +89,19 @@ export const setAdminCommand = async (ctx: Context<Update>) => {
 
 export const removeAdminCommand = async (ctx: Context<Update>) => {
   try {
-    adminGuardCache(ctx);
     // @ts-ignore
     const toBeRemovedId = Number(ctx.message.reply_to_message?.from?.id);
-    const chatId = Number(ctx.chat?.id);
     const isIdInvalid = isNaN(toBeRemovedId);
-
-    if (isIdInvalid) {
+    if (!toBeRemovedId && isIdInvalid) {
       throw new Error(`I couldn't get the user id.`);
     }
+
+    const chatId = Number(ctx.chat?.id);
+    const senderId = Number(ctx.from?.id);
+    const isGlobalAdmin = await isSenderAdmin(senderId);
+    const isGroupAdmin = isAdmin(chatId, senderId);
+    if (!isGlobalAdmin && !isGroupAdmin) return;
+
     await removeAdmin(chatId, toBeRemovedId);
     await sendDisappearingMessage(
       ctx,
