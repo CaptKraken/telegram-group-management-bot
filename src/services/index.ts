@@ -5,6 +5,7 @@ export {
   setSchedule,
   setDayCount,
   createGroup,
+  deleteGroup,
   increaseDayCount,
 } from "./day-counter";
 

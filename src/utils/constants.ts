@@ -1,5 +1,6 @@
 export const COMMANDS = {
   setGroup: "setGroup",
+  removeGroup: "removeGroup",
   setCount: "setCount",
   setSchedule: "setSchedule",
   setAdmin: "setAdmin",

@@ -4,39 +4,43 @@ import { errorHandler, getDayCountAndScheduleExpression } from "../utils/index";
 import { COMMANDS } from "../utils/constants";
 import {
   createGroup,
-  isAdmin,
+  deleteGroup,
+  isSenderAdmin,
   removeAdmin,
   sendDisappearingMessage,
   setAdmin,
-  setDayCount,
-  setSchedule,
-} from "../services/index";
+} from "../services";
 import { restartCronJobs } from "../services/cron-jobs";
-import { adminGuardCache } from "../utils/guards";
+import { adminGuardCache, isGroup } from "../utils/guards";
 export const setGroupCommand = async (ctx: Context<Update>) => {
   try {
-    const messageType = ctx.message?.chat.type;
-    const isGroup = messageType === "group";
-    if (!isGroup) {
+    if (!isGroup(ctx)) {
       ctx.reply("setGroup command can only be use in groups.");
       return;
     }
-    const groupId = ctx.message?.chat.id;
+    const chatId = Number(ctx.chat?.id);
+    const senderId = Number(ctx.from?.id);
+
+    const isAdmin = await isSenderAdmin(senderId);
+    if (!isAdmin) return;
+
     // @ts-ignore
     const cleanedMessage = `${ctx.message?.text}`
       .replace(`/${COMMANDS.setGroup} `, "")
       .trim();
+
     const { dayCount, schedule } =
       getDayCountAndScheduleExpression(cleanedMessage);
 
     const createGroupPayload = {
-      groupId: Number(ctx.chat?.id),
-      adminId: Number(ctx.from?.id),
+      groupId: chatId,
+      adminId: senderId,
       dayCount,
       schedule,
     };
 
     await createGroup(createGroupPayload);
+    await restartCronJobs();
     await sendDisappearingMessage(
       ctx,
       `[BOT]: This group has been set up successfully.`
@@ -46,23 +50,13 @@ export const setGroupCommand = async (ctx: Context<Update>) => {
   }
 };
 
-export const setCountCommand = async (ctx: Context<Update>) => {
+export const removeGroupCommand = async (ctx: Context<Update>) => {
   try {
-    adminGuardCache(ctx);
-    const count = Number(
-      // @ts-ignore
-      `${ctx.message?.text}`.replace(`/${COMMANDS.setCount} `, "").trim()
-    );
-    const isCountInvalid = isNaN(count);
-    if (isCountInvalid) {
-      throw new Error("Count is Invalid.");
-    }
-    const groupId = Number(ctx.chat?.id);
-
-    await setDayCount(groupId, count);
-    await sendDisappearingMessage(ctx, `[BOT]: Day count set to ${count}.`);
-  } catch (e) {
-    errorHandler(ctx, e);
+    if (!isGroup(ctx)) return;
+    await deleteGroup(Number(ctx.chat?.id));
+    await sendDisappearingMessage(ctx, `[Success]: Group removed.`);
+  } catch (error) {
+    errorHandler(ctx, error);
   }
 };
 
@@ -109,28 +103,3 @@ export const removeAdminCommand = async (ctx: Context<Update>) => {
     errorHandler(ctx, e);
   }
 };
-
-export const setScheduleCommand = async (ctx: Context<Update>) => {
-  try {
-    adminGuardCache(ctx);
-    const chatId = Number(ctx.chat?.id);
-    // @ts-ignore
-    const cronExpression = ctx.message?.text.replace(
-      `/${COMMANDS.setSchedule} `,
-      ""
-    );
-    await setSchedule(chatId, cronExpression);
-    await sendDisappearingMessage(
-      ctx,
-      `[BOT]: Schedule set to ${cronExpression}.`
-    );
-    await restartCronJobs();
-  } catch (e) {
-    errorHandler(ctx, e);
-  }
-};
-
-//   } catch (e) {
-//     errorHandler(ctx, e);
-//   }
-// };

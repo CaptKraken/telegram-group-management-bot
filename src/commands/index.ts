@@ -1,9 +1,10 @@
+export { sendCommands } from "./help";
+
 export {
   removeAdminCommand,
   setAdminCommand,
-  setCountCommand,
   setGroupCommand,
-  setScheduleCommand,
+  removeGroupCommand,
 } from "./day-counter-commands";
 
 export {

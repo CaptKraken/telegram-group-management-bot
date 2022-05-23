@@ -110,24 +110,42 @@ type createGroupDTO = {
  * @param {number} adminId user id
  * @param {number?} dayCount day count; default = 0;
  */
+
 export const createGroup = async ({
   groupId,
   adminId,
-  dayCount = 0,
+  dayCount,
   schedule,
 }: createGroupDTO): Promise<void> => {
   try {
     await dbClient.connect();
-    await dayCountCollection.insertOne({
-      chat_id: groupId,
-      admins: [adminId],
-      day_count: dayCount,
-      schedule: schedule || everydayAtMidNight,
-    });
+    const oldData = await dayCountCollection.findOne({ chat_id: groupId });
+    await dayCountCollection.updateOne(
+      {
+        chat_id: groupId,
+      },
+      {
+        chat_id: groupId,
+        admins: [adminId],
+        day_count: dayCount ?? oldData?.day_count ?? 0,
+        schedule: schedule ?? oldData?.schedule ?? everydayAtMidNight,
+      },
+      { upsert: true }
+    );
     await dbClient.close();
     await fetchAndCache();
   } catch (err) {
     throw new Error(`function: createGroup\nError:\n${err}`);
+  }
+};
+
+export const deleteGroup = async (chat_id: number) => {
+  try {
+    await dbClient.connect();
+    await dayCountCollection.deleteOne({ chat_id });
+    await dbClient.close();
+  } catch (error) {
+    throw new Error(`${error}`);
   }
 };
 

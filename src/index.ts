@@ -21,14 +21,14 @@ import {
   removeAdminCommand,
   removeGlobalAdminCommand,
   removeGroupBroadcastCommand,
+  removeGroupCommand,
   removeReaderCommand,
   removeWeightCommand,
   renameFolderCommand,
   sendAdminListCommand,
+  sendCommands,
   setAdminCommand,
-  setCountCommand,
   setGroupCommand,
-  setScheduleCommand,
   setupWeightCommand,
   updateReadCountCommand,
 } from "./commands";
@@ -65,16 +65,15 @@ expressApp.use(bodyParser.json());
 export const TELEGRAM_API = `https://api.telegram.org/bot${BOT_TOKEN}`;
 
 bot.start((ctx) => ctx.reply("Welcome"));
-bot.help((ctx) => ctx.reply("Send me a sticker"));
+bot.help(sendCommands);
 bot.on("sticker", (ctx) => ctx.reply("👍"));
 bot.hears("hi", (ctx) => ctx.reply("Hey there"));
 
 // #region Count
 bot.command(COMMANDS.setGroup, setGroupCommand);
-bot.command(COMMANDS.setCount, setCountCommand);
+bot.command(COMMANDS.removeGroup, removeGroupCommand);
 bot.command(COMMANDS.setAdmin, setAdminCommand);
 bot.command(COMMANDS.removeAdmin, removeAdminCommand);
-bot.command(COMMANDS.setSchedule, setScheduleCommand);
 // #endregion
 
 // #region Weight
@@ -97,7 +96,6 @@ bot.action(
 bot.action(/\bremove-group-broadcast-action\b/g, removeGroupBroadcastAction);
 bot.action(/\bgo-back-broadcast-action\b/g, goBackBroadcastAction);
 bot.action(/\bcancel\b/g, cancelAction);
-
 bot.command(COMMANDS.emit, emitBroadcastCommand);
 bot.action(/\bemit\b/g, emitBroadcastAction);
 
