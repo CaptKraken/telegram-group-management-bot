@@ -29,8 +29,6 @@ export const setGroupCommand = async (ctx: Context<Update>) => {
       .replace(`/${COMMANDS.setGroup} `, "")
       .trim();
 
-    if (!cleanedMessage) return;
-
     const { dayCount, schedule } =
       getDayCountAndScheduleExpression(cleanedMessage);
 

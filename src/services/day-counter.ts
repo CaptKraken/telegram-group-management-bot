@@ -125,10 +125,12 @@ export const createGroup = async ({
         chat_id: groupId,
       },
       {
-        chat_id: groupId,
-        admins: [adminId],
-        day_count: dayCount ?? oldData?.day_count ?? 0,
-        schedule: schedule ?? oldData?.schedule ?? everydayAtMidNight,
+        $set: {
+          chat_id: groupId,
+          admins: [adminId],
+          day_count: dayCount ?? oldData?.day_count ?? 0,
+          schedule: schedule ?? oldData?.schedule ?? everydayAtMidNight,
+        },
       },
       { upsert: true }
     );
