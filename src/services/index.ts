@@ -19,6 +19,8 @@ export {
   readCountDocId,
   readCountGroupId,
   isReadingGroup,
+  usedQuoteCollection,
+  quoteCollection,
 } from "./db-client";
 
 export { sendDisappearingMessage } from "./messaging";
@@ -63,3 +65,5 @@ export {
   increaseReportCount,
   sendReport,
 } from "./read-counter";
+
+export { fetchQuote, fetchAllQuotes, addQuote, removeQuote } from "./quote";

@@ -7,13 +7,19 @@ import bodyParser from "body-parser";
 import { COMMANDS, errorHandler, setupWeightRegex } from "./utils";
 
 import {
+  dbClient,
   initCronJobs,
   isSenderAdmin,
   sendDisappearingMessage,
+  quoteCollection,
+  usedQuoteCollection,
+  addQuote,
+  removeQuote,
 } from "./services";
 import {
   addGlobalAdminCommand,
   addGroupBroadcastCommand,
+  addQuoteCommand,
   createFolderCommand,
   deleteFolderCommand,
   emitBroadcastCommand,
@@ -22,6 +28,7 @@ import {
   removeGlobalAdminCommand,
   removeGroupBroadcastCommand,
   removeGroupCommand,
+  removeQuoteCommand,
   removeReaderCommand,
   removeWeightCommand,
   renameFolderCommand,
@@ -55,7 +62,7 @@ import {
   getAdminList,
   removeGlobalAdmin,
 } from "./services/admin";
-
+import { ObjectId } from "mongodb";
 dotenv.config();
 const { BOT_TOKEN, SERVER_URL } = process.env;
 
@@ -118,6 +125,11 @@ bot.command(COMMANDS.removeGlobalAdmin, removeGlobalAdminCommand);
 
 // #endregion
 
+//#region Quote
+bot.command(COMMANDS.addQuote, addQuoteCommand);
+bot.command(COMMANDS.removeQuote, removeQuoteCommand);
+//#endregion
+
 //#region STARTING THE SERVER
 setInterval(() => {
   try {
@@ -135,13 +147,8 @@ expressApp.get("/", (req: Request, res: Response) => {
   res.json({ alive: true });
 });
 
-expressApp.post(`/bot${BOT_TOKEN}`, (req: Request, res: Response) => {
-  console.log("hey");
-  res.send();
-});
-
 expressApp.listen(process.env.PORT || 3000, async () => {
-  console.log(`[INFO]: App running on port ${process.env.PORT}`);
+  console.log(`[INFO]: App running on port ${process.env.PORT || 3000}`);
   console.log(`************* INIT BOT *************`);
   await initCronJobs();
   console.log(`************ INIT  DONE ************`);

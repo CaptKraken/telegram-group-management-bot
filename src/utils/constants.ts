@@ -29,6 +29,8 @@ export const COMMANDS = {
   removeGlobalAdmin: "removeGlobalAdmin",
   removeReader: "removeReader",
   readReport: "readReport",
+  addQuote: "addQuote",
+  removeQuote: "removeQuote",
 };
 
 export const everydayAt5AM = "0 0 5 * * *";

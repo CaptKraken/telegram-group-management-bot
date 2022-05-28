@@ -30,6 +30,8 @@ export const announcementCollection = dbClient
   .collection("data");
 
 export const adminCollection = dbClient.db("admin-db").collection("data");
+export const quoteCollection = dbClient.db("quote-db").collection("data");
+export const usedQuoteCollection = dbClient.db("quote-db").collection("used");
 
 type DBSchema = {
   _id: ObjectId;

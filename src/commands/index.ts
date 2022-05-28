@@ -32,3 +32,5 @@ export {
   addGlobalAdminCommand,
   removeGlobalAdminCommand,
 } from "./admin-commands";
+
+export { addQuoteCommand, removeQuoteCommand } from "./quote-commands";
