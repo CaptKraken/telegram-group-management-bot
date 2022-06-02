@@ -144,7 +144,7 @@ bot.telegram.setWebhook(`${SERVER_URL}/bot${BOT_TOKEN}`);
 expressApp.use(bot.webhookCallback(`/bot${BOT_TOKEN}`));
 
 expressApp.get("/", (req: Request, res: Response) => {
-  res.json({ alive: true });
+  res.json({ alive: true, uptime: process.uptime() });
 });
 
 expressApp.listen(process.env.PORT || 3000, async () => {
