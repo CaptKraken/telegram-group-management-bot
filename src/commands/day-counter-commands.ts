@@ -30,12 +30,13 @@ export const setGroupCommand = async (ctx: Context<Update>) => {
       .replace(`/${COMMANDS.setGroup} `, "")
       .trim();
 
-    const { dayCount, schedule } =
+    const { message, dayCount, schedule } =
       getDayCountAndScheduleExpression(cleanedMessage);
 
     const createGroupPayload = {
       groupId: chatId,
       adminId: senderId,
+      message: message,
       dayCount,
       schedule,
     };

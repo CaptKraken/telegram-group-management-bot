@@ -14,31 +14,41 @@ export const errorLog = (name: string, err: Error) => {
   return errorString;
 };
 export const getDayCountAndScheduleExpression = (message: string) => {
-  const flags = message.split("-");
+  const flags = message.split(" -");
   type Result = {
+    message?: string;
     dayCount?: number;
     schedule?: string;
   };
   const result: Result = {
+    message: undefined,
     dayCount: undefined,
     schedule: undefined,
   };
-  flags.forEach((flag) => {
-    if (flag.includes("d ")) {
-      const number = flag.replace("d ", "");
-      if (number) {
-        result.dayCount = parseInt(number);
+  flags
+    .map((flag) => flag.trim())
+    .forEach((flag) => {
+      if (flag.startsWith("m ")) {
+        const message = flag.replace("m ", "");
+        if (message) {
+          result.message = message;
+        }
       }
-    }
-    if (flag.includes("s ")) {
-      const schedule = flag
-        .replace("s ", "")
-        .trim()
-        .replaceAll(`"`, "")
-        .replaceAll(`'`, "");
-      result.schedule = schedule;
-    }
-  });
+      if (flag.startsWith("d ")) {
+        const number = flag.replace("d ", "");
+        if (number) {
+          result.dayCount = parseInt(number);
+        }
+      }
+      if (flag.startsWith("s ")) {
+        const schedule = flag
+          .replace("s ", "")
+          .trim()
+          .replaceAll(`"`, "")
+          .replaceAll(`'`, "");
+        result.schedule = schedule;
+      }
+    });
   return result;
 };
 

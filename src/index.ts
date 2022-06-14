@@ -71,7 +71,7 @@ const expressApp = express();
 expressApp.use(bodyParser.json());
 export const TELEGRAM_API = `https://api.telegram.org/bot${BOT_TOKEN}`;
 
-bot.start((ctx) => ctx.reply("Welcome"));
+bot.start(sendCommands);
 bot.help(sendCommands);
 
 // #region Count
