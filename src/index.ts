@@ -4,18 +4,9 @@ import axios from "axios";
 import dotenv from "dotenv";
 import express, { Request, Response } from "express";
 import bodyParser from "body-parser";
-import { COMMANDS, errorHandler, setupWeightRegex } from "./utils";
+import { COMMANDS, setupWeightRegex } from "./utils";
 
-import {
-  dbClient,
-  initCronJobs,
-  isSenderAdmin,
-  sendDisappearingMessage,
-  quoteCollection,
-  usedQuoteCollection,
-  addQuote,
-  removeQuote,
-} from "./services";
+import { initCronJobs } from "./services";
 import {
   addGlobalAdminCommand,
   addGroupBroadcastCommand,
@@ -48,21 +39,6 @@ import {
   removeGroupBroadcastAction,
   showRemoveGroupBroadcastAction,
 } from "./actions";
-import {
-  removeReader,
-  saveReadCount,
-  sendReport,
-} from "./services/read-counter";
-import {
-  convertKhmerToArabicNumerals,
-  isNumber,
-} from "./utils/read-count-utils";
-import {
-  addGlobalAdmin,
-  getAdminList,
-  removeGlobalAdmin,
-} from "./services/admin";
-import { ObjectId } from "mongodb";
 dotenv.config();
 const { BOT_TOKEN, SERVER_URL } = process.env;
 
