@@ -29,7 +29,11 @@ export const getDayCountAndScheduleExpression = (message: string) => {
     .map((flag) => flag.trim())
     .forEach((flag) => {
       if (flag.startsWith("m ")) {
-        const message = flag.replace("m ", "");
+        const message = flag
+          .replace("m ", "")
+          .trim()
+          .replaceAll(`"`, "")
+          .replaceAll(`'`, "");
         if (message) {
           result.message = message;
         }
