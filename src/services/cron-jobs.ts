@@ -53,7 +53,6 @@ const createCronJobs = async () => {
   });
 
   await fetchAndCache();
-  console.log(cache);
 
   cache.forEach((group) => {
     const isScheduleExpressionValid = cron.validate(
