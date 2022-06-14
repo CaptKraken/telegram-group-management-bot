@@ -26,9 +26,10 @@ export const setGroupCommand = async (ctx: Context<Update>) => {
     if (!isAdmin) return;
 
     // @ts-ignore
-    const cleanedMessage = `${ctx.message?.text}`
-      .replace(`/${COMMANDS.setGroup} `, "")
-      .trim();
+    const cleanedMessage = `${ctx.message?.text}`.replace(
+      `/${COMMANDS.setGroup}`,
+      ""
+    );
 
     const { message, dayCount, schedule } =
       getDayCountAndScheduleExpression(cleanedMessage);
