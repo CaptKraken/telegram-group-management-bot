@@ -73,10 +73,13 @@ const createCronJobs = async () => {
             // send message to the group
             const data = cache.find((g) => g?.chat_id === groupId);
 
-            await sendMessage(
-              Number(group?.chat_id),
-              `ថ្ងៃ ${data?.day_count}`
-            );
+            const uncleanedMessage = data?.message;
+            const message = `${uncleanedMessage?.replace(
+              "{day_count}",
+              `${data?.day_count}`
+            )}`;
+
+            await sendMessage(Number(group?.chat_id), message);
           } catch (err) {
             console.error(`Cron Job Error\nerror: ${err}`);
           }
