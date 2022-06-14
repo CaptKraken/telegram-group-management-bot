@@ -37,6 +37,7 @@ type DBSchema = {
   _id: ObjectId;
   chat_id: number;
   schedule: string;
+  message: string;
   admins: number[];
   day_count: number;
 };

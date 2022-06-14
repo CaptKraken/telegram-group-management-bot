@@ -54,8 +54,6 @@ export const getDayCountAndScheduleExpression = (message: string) => {
       }
     });
 
-  console.log(result);
-
   return result;
 };
 
