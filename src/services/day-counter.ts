@@ -23,10 +23,9 @@ export const fetchAndCache = async () => {
     await dbClient.connect();
     // @ts-ignore
     cache = await dayCountCollection.find({}).toArray();
+    await dbClient.close();
   } catch (err) {
     throw new Error(`function: fetchAndCache\nError:\n${err}`);
-  } finally {
-    await dbClient.close();
   }
 };
 
