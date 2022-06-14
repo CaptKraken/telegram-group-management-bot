@@ -73,8 +73,6 @@ export const TELEGRAM_API = `https://api.telegram.org/bot${BOT_TOKEN}`;
 
 bot.start((ctx) => ctx.reply("Welcome"));
 bot.help(sendCommands);
-bot.on("sticker", (ctx) => ctx.reply("👍"));
-bot.hears("hi", (ctx) => ctx.reply("Hey there"));
 
 // #region Count
 bot.command(COMMANDS.setGroup, setGroupCommand);

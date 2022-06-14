@@ -100,6 +100,7 @@ export const setDayCount = async (
 type createGroupDTO = {
   groupId: number;
   adminId: number;
+  message?: string;
   dayCount?: number;
   schedule?: string;
 };
@@ -114,6 +115,7 @@ type createGroupDTO = {
 export const createGroup = async ({
   groupId,
   adminId,
+  message,
   dayCount,
   schedule,
 }: createGroupDTO): Promise<void> => {
@@ -129,6 +131,7 @@ export const createGroup = async ({
           chat_id: groupId,
           admins: [adminId],
           day_count: dayCount ?? oldData?.day_count ?? 0,
+          message: message ?? oldData?.message ?? "ថ្ងៃទី{day_count}",
           schedule: schedule ?? oldData?.schedule ?? everydayAtMidNight,
         },
       },
