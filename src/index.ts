@@ -55,11 +55,19 @@ bot.command("/test", (ctx) => {
 });
 
 bot.on("edited_message", (ctx) => {
-  // if (ctx.editedMessage.chat.id === readCountGroupId) {
+  // if () {
   const messageId = ctx.update.edited_message.message_id;
   // @ts-ignore
   const updatedText: string = ctx.update.edited_message?.text;
-  if (updatedText.startsWith("#") && updatedText.match(/\#\d{1,}/g)) {
+
+  // @ts-ignore
+  console.log(ctx.message.text, updatedText);
+
+  const inReadingGroup = ctx.editedMessage.chat.id === readCountGroupId;
+  const startsWithHashtag = updatedText.startsWith("#");
+  const matchesReadForm = updatedText.match(/\#\d{1,}/g);
+
+  if (inReadingGroup && startsWithHashtag && matchesReadForm) {
     console.log(`**888**\n**888**\n`, messageId, updatedText);
   } else console.log(`**888**\nNO\n**888**\n`, messageId, updatedText);
   // }
