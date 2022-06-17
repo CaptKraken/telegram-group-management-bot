@@ -20,8 +20,10 @@ export const updateReadCountCommand = async (ctx: Context<Update>) => {
   try {
     const message: string =
       // @ts-ignore
-      ctx.message?.text?.trim() ?? ctx.update.edited_message.message_id;
-    const messageId = ctx.message?.message_id;
+      ctx.message?.text?.trim() ?? ctx.update?.edited_message?.message_id;
+    const messageId =
+      //@ts-ignore
+      ctx.message?.message_id ?? ctx.update?.edited_message?.message_id;
 
     const isRightGroup = isReadingGroup(Number(ctx.chat?.id));
     const isStartsWithHashtag = message.startsWith("#");
