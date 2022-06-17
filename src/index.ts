@@ -51,8 +51,11 @@ export const TELEGRAM_API = `https://api.telegram.org/bot${BOT_TOKEN}`;
 bot.start(sendCommands);
 bot.help(sendCommands);
 bot.command("/test", (ctx) => {
-  console.log(ctx);
-  console.log(ctx.editedMessage);
+  console.log(`**888**\n**888**\n`, ctx);
+});
+
+bot.on("edited_message", (ctx) => {
+  console.log(`**888**\n**888**\n`, ctx);
 });
 
 // #region Count
