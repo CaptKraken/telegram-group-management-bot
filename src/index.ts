@@ -50,37 +50,8 @@ export const TELEGRAM_API = `https://api.telegram.org/bot${BOT_TOKEN}`;
 
 bot.start(sendCommands);
 bot.help(sendCommands);
-bot.command("/test", (ctx) => {
-  console.log(`**888**\n**888**\n`);
-});
 
-bot.on("edited_message", (ctx) => {
-  // if () {
-  const messageId = ctx.update.edited_message.message_id;
-  // @ts-ignore
-  const updatedText: string = ctx.update.edited_message?.text;
-
-  console.log(
-    "message id",
-    // @ts-ignore
-    ctx.message?.message_id,
-    "edited id",
-    messageId,
-    "from id",
-    ctx.from?.id,
-    "chat id",
-    ctx.chat?.id
-  );
-
-  const inReadingGroup = ctx.editedMessage.chat.id === readCountGroupId;
-  const startsWithHashtag = updatedText.startsWith("#");
-  const matchesReadForm = updatedText.match(/\#\d{1,}/g);
-
-  if (inReadingGroup && startsWithHashtag && matchesReadForm) {
-    console.log(`**888**\n**888**\n`, messageId, updatedText);
-  }
-  // }
-});
+bot.on("edited_message", (ctx) => updateReadCountCommand(ctx, false));
 
 // #region Count
 bot.command(COMMANDS.setGroup, setGroupCommand);
@@ -119,7 +90,7 @@ bot.action(/\bemit\b/g, emitBroadcastAction);
 // #endregion
 
 // #region Read Count
-bot.hears(/\#\d{1,}/g, updateReadCountCommand);
+bot.hears(/\#\d{1,}/g, (ctx) => updateReadCountCommand(ctx));
 bot.command(COMMANDS.removeReader, removeReaderCommand);
 bot.command(COMMANDS.readReport, readReportCommand);
 // #endregion

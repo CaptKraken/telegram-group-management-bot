@@ -16,14 +16,21 @@ import {
   isReadingGroup,
 } from "../services";
 
-export const updateReadCountCommand = async (ctx: Context<Update>) => {
+export const updateReadCountCommand = async (
+  ctx: Context<Update>,
+  isNew: boolean = true
+) => {
   try {
-    const message: string =
-      // @ts-ignore
-      ctx.message?.text?.trim() ?? ctx.update?.edited_message?.message_id;
-    const messageId =
-      //@ts-ignore
-      ctx.message?.message_id ?? ctx.update?.edited_message?.message_id;
+    const message: string = isNew
+      ? // @ts-ignore
+        ctx.message?.text?.trim()
+      : // @ts-ignore
+        ctx.update?.edited_message?.message_id;
+    const messageId = isNew
+      ? //@ts-ignore
+        ctx.message?.message_id
+      : //@ts-ignore
+        ctx.update?.edited_message?.message_id;
 
     const isRightGroup = isReadingGroup(Number(ctx.chat?.id));
     const isStartsWithHashtag = message.startsWith("#");
