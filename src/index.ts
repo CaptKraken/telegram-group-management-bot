@@ -48,11 +48,12 @@ const expressApp = express();
 expressApp.use(bodyParser.json());
 export const TELEGRAM_API = `https://api.telegram.org/bot${BOT_TOKEN}`;
 
-bot.start((ctx) => {
+bot.start(sendCommands);
+bot.help(sendCommands);
+bot.command("/test", (ctx) => {
   console.log(ctx.message);
   console.log(ctx.editedMessage);
 });
-bot.help(sendCommands);
 
 // #region Count
 bot.command(COMMANDS.setGroup, setGroupCommand);
