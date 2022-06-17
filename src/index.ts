@@ -61,7 +61,7 @@ bot.on("edited_message", (ctx) => {
   const updatedText: string = ctx.update.edited_message?.text;
 
   // @ts-ignore
-  console.log(ctx.message.text, updatedText);
+  console.log(ctx.message?.text, updatedText);
 
   const inReadingGroup = ctx.editedMessage.chat.id === readCountGroupId;
   const startsWithHashtag = updatedText.startsWith("#");
