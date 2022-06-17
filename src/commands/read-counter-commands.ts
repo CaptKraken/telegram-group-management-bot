@@ -25,7 +25,7 @@ export const updateReadCountCommand = async (
       ? // @ts-ignore
         ctx.message?.text?.trim()
       : // @ts-ignore
-        ctx.update?.edited_message?.message_id;
+        ctx.update.edited_message?.text;
     const messageId = isNew
       ? //@ts-ignore
         ctx.message?.message_id
@@ -33,7 +33,7 @@ export const updateReadCountCommand = async (
         ctx.update?.edited_message?.message_id;
 
     const isRightGroup = isReadingGroup(Number(ctx.chat?.id));
-    const isStartsWithHashtag = message.startsWith("#");
+    const isStartsWithHashtag = message?.startsWith("#");
     const isValidGroupAndMessage = isRightGroup && isStartsWithHashtag;
 
     if (!isValidGroupAndMessage) return;
