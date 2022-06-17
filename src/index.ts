@@ -55,9 +55,12 @@ bot.command("/test", (ctx) => {
 });
 
 bot.on("edited_message", (ctx) => {
-  if (ctx.editedMessage.chat.id === readCountGroupId) {
-    console.log(`**888**\n**888**\n`, ctx.update.edited_message);
-  }
+  // if (ctx.editedMessage.chat.id === readCountGroupId) {
+  const messageId = ctx.update.edited_message.message_id;
+  // @ts-ignore
+  const updatedText = ctx.update.edited_message?.text;
+  console.log(`**888**\n**888**\n`, messageId, updatedText);
+  // }
 });
 
 // #region Count
