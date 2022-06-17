@@ -58,8 +58,10 @@ bot.on("edited_message", (ctx) => {
   // if (ctx.editedMessage.chat.id === readCountGroupId) {
   const messageId = ctx.update.edited_message.message_id;
   // @ts-ignore
-  const updatedText = ctx.update.edited_message?.text;
-  console.log(`**888**\n**888**\n`, messageId, updatedText);
+  const updatedText: string = ctx.update.edited_message?.text;
+  if (updatedText.startsWith("#") && updatedText.match(/\#\d{1,}/g)) {
+    console.log(`**888**\n**888**\n`, messageId, updatedText);
+  } else console.log(`**888**\nNO\n**888**\n`, messageId, updatedText);
   // }
 });
 
