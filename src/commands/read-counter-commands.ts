@@ -18,8 +18,10 @@ import {
 
 export const updateReadCountCommand = async (ctx: Context<Update>) => {
   try {
-    // @ts-ignore
-    const message: string = ctx.message?.text.trim();
+    const message: string =
+      // @ts-ignore
+      ctx.message?.text?.trim() ?? ctx.update.edited_message.message_id;
+    const messageId = ctx.message?.message_id;
 
     const isRightGroup = isReadingGroup(Number(ctx.chat?.id));
     const isStartsWithHashtag = message.startsWith("#");
@@ -39,7 +41,6 @@ export const updateReadCountCommand = async (ctx: Context<Update>) => {
 
     const count = convertKhmerToArabicNumerals(parts[0].replace("#", ""));
     const user = parts[1];
-    const messageId = ctx.message?.message_id;
     const hasEnoughData = isNumber(count.toString()) && user && messageId;
 
     if (hasEnoughData) {

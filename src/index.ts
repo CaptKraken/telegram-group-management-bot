@@ -61,7 +61,7 @@ bot.on("edited_message", (ctx) => {
   const updatedText: string = ctx.update.edited_message?.text;
 
   // @ts-ignore
-  console.log(ctx.message?.text, updatedText);
+  console.log(ctx.message?.message_id, messageId);
 
   const inReadingGroup = ctx.editedMessage.chat.id === readCountGroupId;
   const startsWithHashtag = updatedText.startsWith("#");
@@ -69,7 +69,7 @@ bot.on("edited_message", (ctx) => {
 
   if (inReadingGroup && startsWithHashtag && matchesReadForm) {
     console.log(`**888**\n**888**\n`, messageId, updatedText);
-  } else console.log(`**888**\nNO\n**888**\n`, messageId, updatedText);
+  }
   // }
 });
 
