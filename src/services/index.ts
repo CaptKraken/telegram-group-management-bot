@@ -66,4 +66,10 @@ export {
   sendReport,
 } from "./read-counter";
 
-export { fetchQuote, fetchAllQuotes, addQuote, removeQuote } from "./quote";
+export {
+  fetchQuote,
+  fetchAllQuotes,
+  addQuote,
+  addManyQuotes,
+  removeQuote,
+} from "./quote";

@@ -39,6 +39,7 @@ import {
   removeGroupBroadcastAction,
   showRemoveGroupBroadcastAction,
 } from "./actions";
+import { adminRouter, quoteRouter } from "./api";
 dotenv.config();
 const { BOT_TOKEN, SERVER_URL } = process.env;
 
@@ -47,7 +48,10 @@ const expressApp = express();
 expressApp.use(bodyParser.json());
 export const TELEGRAM_API = `https://api.telegram.org/bot${BOT_TOKEN}`;
 
-bot.start(sendCommands);
+bot.start((ctx) => {
+  console.log(ctx.message);
+  console.log(ctx.editedMessage);
+});
 bot.help(sendCommands);
 
 // #region Count
@@ -96,7 +100,6 @@ bot.command(COMMANDS.readReport, readReportCommand);
 bot.command(COMMANDS.admins, sendAdminListCommand);
 bot.command(COMMANDS.addGlobalAdmin, addGlobalAdminCommand);
 bot.command(COMMANDS.removeGlobalAdmin, removeGlobalAdminCommand);
-
 // #endregion
 
 //#region Quote
@@ -117,6 +120,10 @@ setInterval(() => {
 bot.telegram.setWebhook(`${SERVER_URL}/bot${BOT_TOKEN}`);
 expressApp.use(bot.webhookCallback(`/bot${BOT_TOKEN}`));
 
+import cookieParser from "cookie-parser";
+expressApp.use(cookieParser());
+expressApp.use("/admins", adminRouter);
+expressApp.use("/quotes", quoteRouter);
 expressApp.get("/", (req: Request, res: Response) => {
   res.json({ alive: true, uptime: process.uptime() });
 });

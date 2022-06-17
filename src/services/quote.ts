@@ -47,36 +47,59 @@ export const fetchAllQuotes = async () => {
   }
 };
 
-export const addQuote = async (text: string, author: string = "unknown") => {
+export const addQuote = async (
+  text: string,
+  author: string = "unknown",
+  old: string = ""
+) => {
   try {
     await dbClient.connect();
-    await quoteCollection.insertOne({
-      text,
-      author,
-    });
+    await quoteCollection.updateOne(
+      {
+        text: old ?? text,
+      },
+      {
+        $set: { text, author },
+      },
+      {
+        upsert: true,
+      }
+    );
     await dbClient.close();
   } catch (error) {
-    throw new Error(`${error}`);
+    throw error;
   }
 };
 
-export const removeQuote = async (condition: ObjectId | string) => {
+export const addManyQuotes = async (
+  quotes: { text: string; author?: string }[]
+) => {
+  quotes = quotes.map((quote) => {
+    if (!quote.author) {
+      quote.author = "unknown";
+    }
+    return quote;
+  });
   try {
     await dbClient.connect();
-    const payload =
-      typeof condition === "object"
-        ? {
-            _id: condition,
-          }
-        : { text: condition };
+    await quoteCollection.insertMany(quotes);
+    await dbClient.close();
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const removeQuote = async (text: string) => {
+  try {
+    await dbClient.connect();
     await quoteCollection.deleteOne({
-      ...payload,
+      text,
     });
     await usedQuoteCollection.deleteOne({
-      ...payload,
+      text,
     });
     await dbClient.close();
   } catch (error) {
-    throw new Error(`${error}`);
+    throw error;
   }
 };
