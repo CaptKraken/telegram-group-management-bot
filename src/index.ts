@@ -6,7 +6,7 @@ import express, { Request, Response } from "express";
 import bodyParser from "body-parser";
 import { COMMANDS, setupWeightRegex } from "./utils";
 
-import { initCronJobs } from "./services";
+import { initCronJobs, readCountGroupId } from "./services";
 import {
   addGlobalAdminCommand,
   addGroupBroadcastCommand,
@@ -51,11 +51,13 @@ export const TELEGRAM_API = `https://api.telegram.org/bot${BOT_TOKEN}`;
 bot.start(sendCommands);
 bot.help(sendCommands);
 bot.command("/test", (ctx) => {
-  console.log(`**888**\n**888**\n`, ctx);
+  console.log(`**888**\n**888**\n`);
 });
 
 bot.on("edited_message", (ctx) => {
-  console.log(`**888**\n**888**\n`, ctx);
+  if (ctx.editedMessage.chat.id === readCountGroupId) {
+    console.log(`**888**\n**888**\n`, ctx.update.edited_message);
+  }
 });
 
 // #region Count
