@@ -51,7 +51,7 @@ export const TELEGRAM_API = `https://api.telegram.org/bot${BOT_TOKEN}`;
 bot.start(sendCommands);
 bot.help(sendCommands);
 bot.command("/test", (ctx) => {
-  console.log(ctx.message);
+  console.log(ctx);
   console.log(ctx.editedMessage);
 });
 
