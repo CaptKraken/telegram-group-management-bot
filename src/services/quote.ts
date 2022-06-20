@@ -1,4 +1,4 @@
-import { ObjectId } from "mongodb";
+import { AnyBulkWriteOperation, Document, ObjectId } from "mongodb";
 import { dbClient, quoteCollection, usedQuoteCollection } from "./db-client";
 
 export const fetchQuote = async () => {
@@ -47,24 +47,13 @@ export const fetchAllQuotes = async () => {
   }
 };
 
-export const addQuote = async (
-  text: string,
-  author: string = "unknown",
-  old: string = ""
-) => {
+export const addQuote = async (text: string, author: string = "unknown") => {
   try {
     await dbClient.connect();
-    await quoteCollection.updateOne(
-      {
-        text: old ?? text,
-      },
-      {
-        $set: { text, author },
-      },
-      {
-        upsert: true,
-      }
-    );
+    await quoteCollection.insertOne({
+      text,
+      author,
+    });
     await dbClient.close();
   } catch (error) {
     throw error;
@@ -74,15 +63,43 @@ export const addQuote = async (
 export const addManyQuotes = async (
   quotes: { text: string; author?: string }[]
 ) => {
-  quotes = quotes.map((quote) => {
-    if (!quote.author) {
-      quote.author = "unknown";
-    }
-    return quote;
+  // quotes = quotes.map((quote) => {
+  //   if (!quote.author) {
+  //     quote.author = "unknown";
+  //   }
+  //   return quote;
+  // });
+
+  const queries:
+    | AnyBulkWriteOperation<Document>[]
+    | {
+        updateOne: {
+          filter: { text: string };
+          update: { $set: { text: string; author: string } };
+          upsert: boolean;
+        };
+      }[] = [];
+
+  quotes.map((quote) => {
+    queries.push({
+      updateOne: {
+        filter: {
+          text: quote.text,
+        },
+        update: {
+          $set: {
+            text: quote.text,
+            author: quote.author ?? "unknown",
+          },
+        },
+        upsert: true,
+      },
+    });
   });
+
   try {
     await dbClient.connect();
-    await quoteCollection.insertMany(quotes);
+    await quoteCollection.bulkWrite(queries);
     await dbClient.close();
   } catch (error) {
     throw error;

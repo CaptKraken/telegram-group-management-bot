@@ -13,27 +13,27 @@ export const findAllFolders = async () => {
   }
 };
 
-type NameOrId = {
-  folder_name?: string;
-  _id?: ObjectId;
-};
+// type NameOrId = {
+//   folder_name?: string;
+//   _id?: ObjectId;
+// };
 
-export const findOneFolder = async ({ _id, folder_name }: NameOrId) => {
+export const findOneFolder = async ({
+  folder_name,
+}: {
+  folder_name: string;
+}) => {
   try {
-    if (!_id && !folder_name) {
+    if (!folder_name) {
       throw new Error(`No folder id or name was given.`);
     }
-
-    const condition = _id ? { _id } : { folder_name };
     await dbClient.connect();
-
-    const folder = await announcementCollection.findOne(condition);
-
+    const folder = await announcementCollection.findOne({ folder_name });
     await dbClient.close();
 
     return folder;
   } catch (err) {
-    throw new Error(`${err}`);
+    throw err;
   }
 };
 
@@ -48,9 +48,7 @@ export const createFolder = async (folder_name: string) => {
   } catch (error) {
     if (error instanceof Error) {
       if (error.message.includes("E11000")) {
-        throw new Error(
-          `Folder "${folder_name}" already exists. Please try again with a different name.`
-        );
+        throw `Folder '${folder_name}' already exists. Please try again with a different name.`;
       }
     }
     throw new Error(`${error}`);
@@ -110,7 +108,7 @@ export type BroadcastGroup = {
 };
 
 export const addGroupBroadcast = async (
-  { _id, folder_name }: NameOrId,
+  { folder_name }: { folder_name: string },
   group_id: number,
   group_name: string
 ) => {
@@ -130,48 +128,50 @@ export const addGroupBroadcast = async (
       );
     }
 
-    if (!_id && !folder_name) {
+    if (!folder_name) {
       throw new Error(`No folder id or name was given.`);
     }
 
-    const condition = _id ? { _id } : { folder_name };
-
     await dbClient.connect();
-    await announcementCollection.updateOne(condition, {
-      $push: {
-        groups: {
-          group_id,
-          group_name,
+    await announcementCollection.updateOne(
+      { folder_name },
+      {
+        $push: {
+          groups: {
+            group_id,
+            group_name,
+          },
         },
-      },
-    });
+      }
+    );
     await dbClient.close();
   } catch (error) {
-    throw new Error(`${error}`);
+    throw error;
   }
 };
 
 export const removeGroupBroadcast = async (
-  { _id, folder_name }: NameOrId,
+  { folder_name }: { folder_name: string },
   group_id: number
 ) => {
   try {
-    if (!_id && !folder_name) {
+    if (!folder_name) {
       throw new Error(`No folder id or name was given.`);
     }
 
-    const condition = _id ? { _id } : { folder_name };
-
     await dbClient.connect();
-    await announcementCollection.updateOne(condition, {
-      $pull: {
-        groups: {
-          group_id,
+    await announcementCollection.updateOne(
+      { folder_name },
+      {
+        $pull: {
+          groups: {
+            group_id,
+          },
         },
-      },
-    });
+      }
+    );
     await dbClient.close();
   } catch (error) {
-    throw new Error(`${error}`);
+    throw error;
   }
 };

@@ -133,11 +133,7 @@ export const removeReader = async (readerName: string) => {
   }
 };
 
-/**
- * sends the read count report to the group
- * @returns void
- */
-export const sendReport = async () => {
+export const findReaders = async () => {
   try {
     await dbClient.connect();
     const collection = await readCountCollection.findOne({
@@ -147,6 +143,19 @@ export const sendReport = async () => {
     if (!collection) {
       throw new Error(`Can't find collection`);
     }
+    return collection;
+  } catch (error) {
+    throw error;
+  }
+};
+
+/**
+ * sends the read count report to the group
+ * @returns void
+ */
+export const sendReport = async () => {
+  try {
+    const collection = await findReaders();
     // prepare the message
     let report = `#${collection.report_count} អានប្រចាំថ្ងៃ 7AM:`;
     const countData = Object.fromEntries(

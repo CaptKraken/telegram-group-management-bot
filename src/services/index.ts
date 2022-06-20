@@ -64,6 +64,7 @@ export {
   removeReader,
   increaseReportCount,
   sendReport,
+  findReaders,
 } from "./read-counter";
 
 export {

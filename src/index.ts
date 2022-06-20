@@ -39,7 +39,12 @@ import {
   removeGroupBroadcastAction,
   showRemoveGroupBroadcastAction,
 } from "./actions";
-import { adminRouter, quoteRouter } from "./api";
+import {
+  adminRouter,
+  broadcastRouter,
+  quoteRouter,
+  readCounterRouter,
+} from "./api";
 dotenv.config();
 const { BOT_TOKEN, SERVER_URL } = process.env;
 
@@ -60,9 +65,9 @@ bot.command(COMMANDS.setAdmin, setAdminCommand);
 bot.command(COMMANDS.removeAdmin, removeAdminCommand);
 // #endregion
 
-// #region Weight
-bot.hears(setupWeightRegex, setupWeightCommand);
-bot.command(COMMANDS.removeWeight, removeWeightCommand);
+// #region Weight stop using
+// bot.hears(setupWeightRegex, setupWeightCommand);
+// bot.command(COMMANDS.removeWeight, removeWeightCommand);
 // #endregion
 
 // #region Broadcast
@@ -123,6 +128,8 @@ import cookieParser from "cookie-parser";
 expressApp.use(cookieParser());
 expressApp.use("/admins", adminRouter);
 expressApp.use("/quotes", quoteRouter);
+expressApp.use("/broadcast", broadcastRouter);
+expressApp.use("/read", readCounterRouter);
 expressApp.get("/", (req: Request, res: Response) => {
   res.json({ alive: true, uptime: process.uptime() });
 });
