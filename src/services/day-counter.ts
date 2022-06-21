@@ -20,12 +20,21 @@ export const isAdmin = (groupId: number, senderId: number) => {
 
 export const fetchAndCache = async () => {
   try {
-    await dbClient.connect();
     // @ts-ignore
-    cache = await dayCountCollection.find({}).toArray();
-    await dbClient.close();
+    cache = await getDayCountCollection();
   } catch (err) {
     throw new Error(`function: fetchAndCache\nError:\n${err}`);
+  }
+};
+
+export const getDayCountCollection = async () => {
+  try {
+    await dbClient.connect();
+    const collection = await dayCountCollection.find({}).toArray();
+    await dbClient.close();
+    return collection;
+  } catch (error) {
+    throw error;
   }
 };
 
@@ -98,10 +107,26 @@ export const setDayCount = async (
 
 type createGroupDTO = {
   groupId: number;
-  adminId: number;
+  groupName?: string;
   message?: string;
   dayCount?: number;
   schedule?: string;
+};
+
+export const findOneDayCounterGroup = async (chat_id: number) => {
+  try {
+    if (!chat_id) {
+      throw new Error("Group ID required.");
+    }
+    await dbClient.connect();
+    const group = await dayCountCollection.findOne({
+      chat_id,
+    });
+    await dbClient.close();
+    return group;
+  } catch (error) {
+    throw error;
+  }
 };
 
 /**
@@ -113,33 +138,43 @@ type createGroupDTO = {
 
 export const createGroup = async ({
   groupId,
-  adminId,
+  groupName,
   message,
   dayCount,
   schedule,
 }: createGroupDTO): Promise<void> => {
   try {
+    if (!groupId) {
+      throw new Error("Group ID not found.");
+    }
+
+    const oldData = await findOneDayCounterGroup(groupId);
+
+    const payload: any = {
+      chat_id: groupId,
+      day_count: dayCount ?? oldData?.day_count ?? 0,
+      message: message ?? oldData?.message ?? "ថ្ងៃទី{day_count}",
+      schedule: schedule ?? oldData?.schedule ?? everydayAtMidNight,
+    };
+
+    if (groupName) {
+      payload["chat_name"] = groupName;
+    }
+
     await dbClient.connect();
-    const oldData = await dayCountCollection.findOne({ chat_id: groupId });
     await dayCountCollection.updateOne(
       {
         chat_id: groupId,
       },
       {
-        $set: {
-          chat_id: groupId,
-          admins: [adminId],
-          day_count: dayCount ?? oldData?.day_count ?? 0,
-          message: message ?? oldData?.message ?? "ថ្ងៃទី{day_count}",
-          schedule: schedule ?? oldData?.schedule ?? everydayAtMidNight,
-        },
+        $set: payload,
       },
       { upsert: true }
     );
     await dbClient.close();
     await fetchAndCache();
   } catch (err) {
-    throw new Error(`function: createGroup\nError:\n${err}`);
+    throw err;
   }
 };
 
@@ -150,27 +185,6 @@ export const deleteGroup = async (chat_id: number) => {
     await dbClient.close();
   } catch (error) {
     throw new Error(`${error}`);
-  }
-};
-
-/**
- * sets admin to the list in the database
- * @param {number} groupId chat id
- * @param {number} userId user id
- */
-export const setAdmin = async (groupId: number, userId: number) => {
-  try {
-    await dbClient.connect();
-    await dayCountCollection.updateOne(
-      { chat_id: groupId },
-      {
-        $push: { admins: userId },
-      }
-    );
-    await dbClient.close();
-    await fetchAndCache();
-  } catch (err) {
-    throw new Error(`function: "setAdmin"\nError:\n${err}`);
   }
 };
 
@@ -199,22 +213,43 @@ export const setSchedule = async (groupId: number, schedule: string) => {
   }
 };
 
-/**
- * removes admin from the list in the database
- * @param {number} userId user id
- */
-export const removeAdmin = async (groupId: number, userId: number) => {
-  try {
-    await dbClient.connect();
-    await dayCountCollection.updateOne(
-      { chat_id: groupId },
-      {
-        $pull: { admins: userId },
-      }
-    );
-    await dbClient.close();
-    await fetchAndCache();
-  } catch (err) {
-    throw new Error(`function: "removeAdmin"\nError:\n${err}`);
-  }
-};
+// /**
+//  * sets admin to the list in the database
+//  * @param {number} groupId chat id
+//  * @param {number} userId user id
+//  */
+//  export const setAdmin = async (groupId: number, userId: number) => {
+//   try {
+//     await dbClient.connect();
+//     await dayCountCollection.updateOne(
+//       { chat_id: groupId },
+//       {
+//         $push: { admins: userId },
+//       }
+//     );
+//     await dbClient.close();
+//     await fetchAndCache();
+//   } catch (err) {
+//     throw new Error(`function: "setAdmin"\nError:\n${err}`);
+//   }
+// };
+
+// /**
+//  * removes admin from the list in the database
+//  * @param {number} userId user id
+//  */
+// export const removeAdmin = async (groupId: number, userId: number) => {
+//   try {
+//     await dbClient.connect();
+//     await dayCountCollection.updateOne(
+//       { chat_id: groupId },
+//       {
+//         $pull: { admins: userId },
+//       }
+//     );
+//     await dbClient.close();
+//     await fetchAndCache();
+//   } catch (err) {
+//     throw new Error(`function: "removeAdmin"\nError:\n${err}`);
+//   }
+// };

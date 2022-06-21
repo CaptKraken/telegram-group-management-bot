@@ -1,4 +1,5 @@
 export { errorHandler } from "./error-handler";
+export { CustomError } from "./custom-error";
 export {
   COMMANDS,
   setupWeightRegex,

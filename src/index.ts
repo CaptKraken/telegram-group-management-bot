@@ -15,7 +15,8 @@ import {
   deleteFolderCommand,
   emitBroadcastCommand,
   readReportCommand,
-  removeAdminCommand,
+  // setAdminCommand,
+  // removeAdminCommand,
   removeGlobalAdminCommand,
   removeGroupBroadcastCommand,
   removeGroupCommand,
@@ -25,7 +26,6 @@ import {
   renameFolderCommand,
   sendAdminListCommand,
   sendCommands,
-  setAdminCommand,
   setGroupCommand,
   setupWeightCommand,
   updateReadCountCommand,
@@ -42,6 +42,7 @@ import {
 import {
   adminRouter,
   broadcastRouter,
+  dayCounterRouter,
   quoteRouter,
   readCounterRouter,
 } from "./api";
@@ -61,8 +62,8 @@ bot.on("edited_message", (ctx) => updateReadCountCommand(ctx, false));
 // #region Count
 bot.command(COMMANDS.setGroup, setGroupCommand);
 bot.command(COMMANDS.removeGroup, removeGroupCommand);
-bot.command(COMMANDS.setAdmin, setAdminCommand);
-bot.command(COMMANDS.removeAdmin, removeAdminCommand);
+// bot.command(COMMANDS.setAdmin, setAdminCommand);
+// bot.command(COMMANDS.removeAdmin, removeAdminCommand);
 // #endregion
 
 // #region Weight stop using
@@ -130,6 +131,7 @@ expressApp.use("/admins", adminRouter);
 expressApp.use("/quotes", quoteRouter);
 expressApp.use("/broadcast", broadcastRouter);
 expressApp.use("/read", readCounterRouter);
+expressApp.use("/day", dayCounterRouter);
 expressApp.get("/", (req: Request, res: Response) => {
   res.json({ alive: true, uptime: process.uptime() });
 });

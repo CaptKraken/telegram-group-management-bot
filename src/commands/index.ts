@@ -1,8 +1,8 @@
 export { sendCommands } from "./help-commands";
 
 export {
-  removeAdminCommand,
-  setAdminCommand,
+  // removeAdminCommand,
+  // setAdminCommand,
   setGroupCommand,
   removeGroupCommand,
 } from "./day-counter-commands";

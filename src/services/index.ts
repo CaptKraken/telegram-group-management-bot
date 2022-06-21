@@ -1,12 +1,12 @@
 export {
   isAdmin,
-  setAdmin,
-  removeAdmin,
   setSchedule,
   setDayCount,
   createGroup,
   deleteGroup,
   increaseDayCount,
+  getDayCountCollection,
+  findOneDayCounterGroup,
 } from "./day-counter";
 
 export {

@@ -7,9 +7,7 @@ import {
   deleteGroup,
   isAdmin,
   isSenderAdmin,
-  removeAdmin,
   sendDisappearingMessage,
-  setAdmin,
 } from "../services";
 import { restartCronJobs } from "../services/cron-jobs";
 import { adminGuardCache, isGroup } from "../utils/guards";
@@ -64,52 +62,52 @@ export const removeGroupCommand = async (ctx: Context<Update>) => {
   }
 };
 
-export const setAdminCommand = async (ctx: Context<Update>) => {
-  try {
-    // @ts-ignore
-    const toBeAdminId = ctx.message?.reply_to_message?.from?.id;
-    const isIdInvalid = isNaN(toBeAdminId);
-    if (!toBeAdminId && isIdInvalid) {
-      throw new Error(`I couldn't get the user id.`);
-    }
+// export const setAdminCommand = async (ctx: Context<Update>) => {
+//   try {
+//     // @ts-ignore
+//     const toBeAdminId = ctx.message?.reply_to_message?.from?.id;
+//     const isIdInvalid = isNaN(toBeAdminId);
+//     if (!toBeAdminId && isIdInvalid) {
+//       throw new Error(`I couldn't get the user id.`);
+//     }
 
-    const chatId = Number(ctx.chat?.id);
-    const senderId = Number(ctx.from?.id);
-    const isGlobalAdmin = await isSenderAdmin(senderId);
-    const isGroupAdmin = isAdmin(chatId, senderId);
-    if (!isGlobalAdmin && !isGroupAdmin) return;
+//     const chatId = Number(ctx.chat?.id);
+//     const senderId = Number(ctx.from?.id);
+//     const isGlobalAdmin = await isSenderAdmin(senderId);
+//     const isGroupAdmin = isAdmin(chatId, senderId);
+//     if (!isGlobalAdmin && !isGroupAdmin) return;
 
-    await setAdmin(chatId, toBeAdminId);
-    await sendDisappearingMessage(
-      ctx,
-      `[BOT]: ID ${toBeAdminId} added to the admin list.`
-    );
-  } catch (e) {
-    errorHandler(ctx, e);
-  }
-};
+//     await setAdmin(chatId, toBeAdminId);
+//     await sendDisappearingMessage(
+//       ctx,
+//       `[BOT]: ID ${toBeAdminId} added to the admin list.`
+//     );
+//   } catch (e) {
+//     errorHandler(ctx, e);
+//   }
+// };
 
-export const removeAdminCommand = async (ctx: Context<Update>) => {
-  try {
-    // @ts-ignore
-    const toBeRemovedId = Number(ctx.message.reply_to_message?.from?.id);
-    const isIdInvalid = isNaN(toBeRemovedId);
-    if (!toBeRemovedId && isIdInvalid) {
-      throw new Error(`I couldn't get the user id.`);
-    }
+// export const removeAdminCommand = async (ctx: Context<Update>) => {
+//   try {
+//     // @ts-ignore
+//     const toBeRemovedId = Number(ctx.message.reply_to_message?.from?.id);
+//     const isIdInvalid = isNaN(toBeRemovedId);
+//     if (!toBeRemovedId && isIdInvalid) {
+//       throw new Error(`I couldn't get the user id.`);
+//     }
 
-    const chatId = Number(ctx.chat?.id);
-    const senderId = Number(ctx.from?.id);
-    const isGlobalAdmin = await isSenderAdmin(senderId);
-    const isGroupAdmin = isAdmin(chatId, senderId);
-    if (!isGlobalAdmin && !isGroupAdmin) return;
+//     const chatId = Number(ctx.chat?.id);
+//     const senderId = Number(ctx.from?.id);
+//     const isGlobalAdmin = await isSenderAdmin(senderId);
+//     const isGroupAdmin = isAdmin(chatId, senderId);
+//     if (!isGlobalAdmin && !isGroupAdmin) return;
 
-    await removeAdmin(chatId, toBeRemovedId);
-    await sendDisappearingMessage(
-      ctx,
-      `[BOT]: ID ${toBeRemovedId} removed from the admin list.`
-    );
-  } catch (e) {
-    errorHandler(ctx, e);
-  }
-};
+//     await removeAdmin(chatId, toBeRemovedId);
+//     await sendDisappearingMessage(
+//       ctx,
+//       `[BOT]: ID ${toBeRemovedId} removed from the admin list.`
+//     );
+//   } catch (e) {
+//     errorHandler(ctx, e);
+//   }
+// };
