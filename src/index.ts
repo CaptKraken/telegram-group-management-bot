@@ -64,7 +64,7 @@ bot.command(COMMANDS.setGroup, async (ctx) => {
   const chat = await ctx.getChat();
   console.log(chat);
 
-  await setGroupCommand(ctx);
+  //await setGroupCommand(ctx);
 });
 bot.command(COMMANDS.removeGroup, removeGroupCommand);
 // bot.command(COMMANDS.setAdmin, setAdminCommand);
