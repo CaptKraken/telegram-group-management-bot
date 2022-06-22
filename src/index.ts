@@ -114,7 +114,7 @@ bot.command(COMMANDS.removeQuote, removeQuoteCommand);
 
 bot.command("h", async (ctx) => {
   ctx.reply(
-    ` *bold \*text* _italic \*text_ __underline__ ~strikethrough~ |spoiler|| *bold _italic bold ~italic bold strikethrough ||italic bold strikethrough spoiler||~ [inline URL](http://www.example.com/)
+    ` *bold \*text* _italic \*text_ __underline__ ~strikethrough~ ||spoiler|| *bold _italic bold ~italic bold strikethrough ||italic bold strikethrough spoiler||~ [inline URL](http://www.example.com/)
     `,
     {
       parse_mode: "MarkdownV2",
