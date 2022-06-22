@@ -2,6 +2,7 @@ export { errorHandler } from "./error-handler";
 export { CustomError } from "./custom-error";
 export {
   COMMANDS,
+  COMMAND_GROUPS,
   setupWeightRegex,
   regexCronExpression,
   cancelKey,

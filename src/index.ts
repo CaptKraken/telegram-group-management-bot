@@ -112,6 +112,15 @@ bot.command(COMMANDS.addQuote, addQuoteCommand);
 bot.command(COMMANDS.removeQuote, removeQuoteCommand);
 //#endregion
 
+bot.command("h", async (ctx) => {
+  ctx.reply(
+    "```python pre-formatted fixed-width code block written in the Python programming language```",
+    {
+      parse_mode: "MarkdownV2",
+    }
+  );
+});
+
 //#region STARTING THE SERVER
 setInterval(() => {
   try {
