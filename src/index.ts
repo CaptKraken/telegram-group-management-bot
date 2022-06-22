@@ -60,12 +60,7 @@ bot.help(sendCommands);
 bot.on("edited_message", (ctx) => updateReadCountCommand(ctx, false));
 
 // #region Count
-bot.command(COMMANDS.setGroup, async (ctx) => {
-  const chat = await ctx.getChat();
-  console.log(chat);
-
-  //await setGroupCommand(ctx);
-});
+bot.command(COMMANDS.setGroup, setGroupCommand);
 bot.command(COMMANDS.removeGroup, removeGroupCommand);
 // bot.command(COMMANDS.setAdmin, setAdminCommand);
 // bot.command(COMMANDS.removeAdmin, removeAdminCommand);
