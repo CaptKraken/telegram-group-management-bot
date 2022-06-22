@@ -1,3 +1,4 @@
+import { CustomError } from "../utils";
 import express, { Request, Response } from "express";
 import { dbClient, findAllAdmins, isSenderAdmin } from "../services";
 import { isAdmin } from "./current-current-middleware";
@@ -5,34 +6,52 @@ import { isAdmin } from "./current-current-middleware";
 export const adminRouter = express.Router();
 
 adminRouter.get("/", isAdmin, async (req: Request, res: Response) => {
-  const user_id = req.body.user_id;
-  if (!user_id) {
-    res
-      .json({
+  try {
+    await dbClient.connect();
+    const adminList = await findAllAdmins();
+    await dbClient.close();
+    return res.send({
+      data: {
+        admins: adminList ?? [],
+      },
+    });
+  } catch (error) {
+    if (error instanceof Error) {
+      return res.status(400).send({
         error: {
-          code: 401,
-          message: "Unauthorized",
+          name: error.name,
+          message: error.message,
         },
-      })
-      .status(401);
+      });
+    }
+    return res.status(400).send();
   }
-  await dbClient.connect();
-  const isAdmin = await isSenderAdmin(user_id);
-  const adminList = isAdmin && (await findAllAdmins());
-  await dbClient.close();
-  res.send({ data: isAdmin ? adminList : null });
 });
 
-adminRouter.get("/check", async (req: Request, res: Response) => {
-  const user_id = req.body.user_id;
-
-  await dbClient.connect();
-  const isAdmin = await isSenderAdmin(user_id);
-  await dbClient.close();
-  if (isAdmin) {
-    res.cookie("telegram-management-user-id", user_id);
-    res.status(200).send();
-  } else {
-    res.status(401).send();
+adminRouter.get("/check/:userId", async (req: Request, res: Response) => {
+  const { userId } = req.params;
+  try {
+    await dbClient.connect();
+    const isAdmin = await isSenderAdmin(Number(userId));
+    await dbClient.close();
+    if (!isAdmin) {
+      throw new CustomError("Unauthorized", 401);
+    }
+    return res
+      .status(204)
+      .cookie("telegram-management-user-id", Number(userId))
+      .send();
+  } catch (error) {
+    if (error instanceof CustomError) {
+      const code = error.getErrorCode();
+      const message = error.getErrorMessage();
+      return res.status(code).send({
+        error: {
+          code,
+          message,
+        },
+      });
+    }
+    return res.status(409).send();
   }
 });

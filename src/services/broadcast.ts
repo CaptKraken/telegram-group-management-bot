@@ -151,7 +151,7 @@ export const addGroupBroadcast = async (
 };
 
 export const removeGroupBroadcast = async (
-  { folder_name }: { folder_name: string },
+  folder_name: string,
   group_id: number
 ) => {
   try {

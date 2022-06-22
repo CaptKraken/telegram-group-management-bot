@@ -205,10 +205,7 @@ export const removeGroupBroadcastAction = async (ctx: Context<Update>) => {
       throw new Error(`Error decoding remove group broadcast action.`);
     }
 
-    await removeGroupBroadcast(
-      { folder_name: payload.folder_name },
-      payload.group_id
-    );
+    await removeGroupBroadcast(payload.folder_name, payload.group_id);
     await sendDisappearingMessage(
       ctx,
       `[Success]: Group removed from "${payload.folder_name}"`

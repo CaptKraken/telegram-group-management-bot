@@ -9,31 +9,24 @@ export const isAdmin = async (
   const cookies = req.cookies;
   const user_id = cookies["telegram-management-user-id"];
 
+  const responseUnauthorized = (message: string) => {
+    return res.status(401).send({
+      error: {
+        code: 401,
+        message,
+      },
+    });
+  };
+
   if (!user_id) {
-    res
-      .json({
-        error: {
-          code: 401,
-          message: "Unauthorized",
-        },
-      })
-      .status(401);
-    return;
+    return responseUnauthorized("unauthenticated");
   }
   await dbClient.connect();
   const isAdmin = await isSenderAdmin(Number(user_id));
   await dbClient.close();
 
   if (!isAdmin) {
-    res
-      .json({
-        error: {
-          code: 401,
-          message: "Unauthorized",
-        },
-      })
-      .status(401);
-    return;
+    return responseUnauthorized("unauthorized");
   }
 
   next();

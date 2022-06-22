@@ -18,6 +18,7 @@ export const setGroupCommand = async (ctx: Context<Update>) => {
       return;
     }
     const chatId = Number(ctx.chat?.id);
+
     const senderId = Number(ctx.from?.id);
 
     const isAdmin = await isSenderAdmin(senderId);
@@ -29,11 +30,14 @@ export const setGroupCommand = async (ctx: Context<Update>) => {
       ""
     );
 
+    const chat = await ctx.getChat();
     const { message, dayCount, schedule } =
       getDayCountAndScheduleExpression(cleanedMessage);
 
     const createGroupPayload = {
       groupId: chatId,
+      // @ts-ignore
+      groupName: chat.title,
       adminId: senderId,
       message: message,
       dayCount,

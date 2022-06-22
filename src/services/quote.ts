@@ -63,13 +63,6 @@ export const addQuote = async (text: string, author: string = "unknown") => {
 export const addManyQuotes = async (
   quotes: { text: string; author?: string }[]
 ) => {
-  // quotes = quotes.map((quote) => {
-  //   if (!quote.author) {
-  //     quote.author = "unknown";
-  //   }
-  //   return quote;
-  // });
-
   const queries:
     | AnyBulkWriteOperation<Document>[]
     | {

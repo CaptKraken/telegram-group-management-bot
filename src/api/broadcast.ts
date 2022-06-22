@@ -1,4 +1,5 @@
 import express, { Request, Response } from "express";
+import { CustomError } from "../utils";
 import {
   addGroupBroadcast,
   createFolder,
@@ -12,7 +13,6 @@ import {
 import { isAdmin } from "./current-current-middleware";
 export const broadcastRouter = express.Router();
 
-// broadcastRouter.get("/folders",async(req: Request, res: Response)=>{});
 broadcastRouter.get(
   "/folders",
   isAdmin,
@@ -24,10 +24,19 @@ broadcastRouter.get(
 
       return res.json({
         data: {
-          folders,
+          folders: folders ?? [],
         },
       });
     } catch (error) {
+      if (error instanceof Error) {
+        return res.status(409).send({
+          error: {
+            code: 409,
+            name: error.name,
+            message: error.message,
+          },
+        });
+      }
       return res.status(409).send();
     }
   }
@@ -44,20 +53,36 @@ broadcastRouter.get(
       await dbClient.close();
 
       if (!folder) {
-        res.status(404).json({
-          error: {
-            code: 404,
-            message: `Folder '${folderName}' not found.`,
-          },
-        });
+        throw new CustomError(`Folder '${folderName}' not found.`, 404);
       }
-      res.json({
+      return res.send({
         data: {
           folder,
         },
       });
     } catch (error) {
-      res.status(409).send();
+      if (error instanceof CustomError) {
+        const code = error.getErrorCode();
+        const message = error.getErrorMessage();
+        return res.status(code).send({
+          error: {
+            code,
+            message,
+          },
+        });
+      }
+
+      if (error instanceof Error) {
+        return res.status(409).send({
+          error: {
+            code: 409,
+            name: error.name,
+            message: error.message,
+          },
+        });
+      }
+
+      return res.status(409).send();
     }
   }
 );
@@ -69,14 +94,23 @@ broadcastRouter.post(
     try {
       const { folder_name } = req.body;
       if (!folder_name) {
-        res.status(400).send();
+        throw new CustomError("folder_name not found.", 400);
       }
       await dbClient.connect();
       await createFolder(folder_name);
       await dbClient.close();
-      res.status(201).send();
+      return res.status(201).send();
     } catch (error) {
-      res.status(409).send({
+      if (error instanceof CustomError) {
+        return res.status(error.statusCode).send({
+          error: {
+            code: error.statusCode,
+            message: error.getErrorMessage(),
+          },
+        });
+      }
+
+      return res.status(409).send({
         error: {
           code: 409,
           message: error,
@@ -94,20 +128,34 @@ broadcastRouter.put(
       const { folderName } = req.params;
 
       const { new_name } = req.body;
-      if (!folderName || !new_name) {
-        res.status(400).send({
-          error: {
-            code: 400,
-            message: "Insufficient data received.",
-          },
-        });
+      if (!new_name) {
+        throw new CustomError("new_name not found.", 400);
       }
       await dbClient.connect();
       await renameFolder({ folder_name: folderName, new_name });
       await dbClient.close();
-      res.send();
+      return res.status(204).send();
     } catch (error) {
-      res.status(409).send({
+      if (error instanceof CustomError) {
+        return res.status(error.statusCode).send({
+          error: {
+            code: error.statusCode,
+            message: error.getErrorMessage(),
+          },
+        });
+      }
+
+      if (error instanceof Error) {
+        return res.status(409).send({
+          error: {
+            code: 409,
+            name: error.name,
+            message: error.message,
+          },
+        });
+      }
+
+      return res.status(409).send({
         error: {
           code: 409,
           message: error,
@@ -142,10 +190,12 @@ broadcastRouter.post(
   "/folders/:folderName/groups",
   isAdmin,
   async (req: Request, res: Response) => {
+    const { folderName } = req.params;
+    const { group_id, group_name } = req.body;
     try {
-      const { folderName } = req.params;
-      const { group_id, group_name } = req.body;
-
+      if (!group_id || !group_name) {
+        throw new CustomError("Insufficient data was given.");
+      }
       await dbClient.connect();
       await addGroupBroadcast(
         { folder_name: folderName },
@@ -155,6 +205,23 @@ broadcastRouter.post(
       await dbClient.close();
       return res.status(201).send();
     } catch (error) {
+      if (error instanceof CustomError) {
+        const fields = [];
+        if (!group_id) {
+          fields.push("group_id");
+        }
+        if (!group_name) {
+          fields.push("group_name");
+        }
+        return res.status(error.statusCode).send({
+          error: {
+            code: error.statusCode,
+            message: error.getErrorMessage(),
+            fields,
+          },
+        });
+      }
+
       if (error instanceof Error) {
         return res.status(409).send({
           error: {
@@ -170,15 +237,13 @@ broadcastRouter.post(
 );
 
 broadcastRouter.delete(
-  "/folders/:folderName/groups",
+  "/folders/:folderName/groups/:groupId",
   isAdmin,
   async (req: Request, res: Response) => {
     try {
-      const { folderName } = req.params;
-      const { group_id } = req.body;
-
+      const { folderName, groupId } = req.params;
       await dbClient.connect();
-      await removeGroupBroadcast({ folder_name: folderName }, group_id);
+      await removeGroupBroadcast(folderName, Number(groupId));
       await dbClient.close();
       return res.status(204).send();
     } catch (error) {
